@@ -33,7 +33,6 @@ public class MapLoader {
 				if (!images.containsKey(tile.getId())) {
 					images.put(tile.getId(), context
 							.loadImageResource("tile" + tile.getId(), tile.getImage()));
-					tile.getProperties().list(System.out);
 				}
 			});
 		});
@@ -44,7 +43,11 @@ public class MapLoader {
 				System.out.println("Found object group layer");
 				ObjectGroup objs = (ObjectGroup) layer;
 				objs.forEach((obj) -> {
-					System.out.format("%.02f-%.02f\n", obj.getX(), obj.getY());
+					GenericGameObject go = new GenericGameObject(
+							"obj" + obj.getX() + ":" + obj.getY(), obj.getType(), null,
+							obj.getProperties());
+					game.add(go);
+					System.out.println(obj.getType());
 				});
 			} else if (layer instanceof TileLayer) {
 				System.out.println("Found tile layer group");

@@ -2,12 +2,8 @@ package com.zealouscoder.ld35;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JFrame;
-
-import com.zealouscoder.ld35.movement.KeyHandler;
 
 public class InputSystem {
 

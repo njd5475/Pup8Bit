@@ -64,4 +64,9 @@ public class Sprite implements Renderable {
 		return position.getView().getLayer();
 	}
 
+	@Override
+	public boolean isRenderable() {
+		return true;
+	}
+
 }

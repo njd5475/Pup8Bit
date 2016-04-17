@@ -5,7 +5,6 @@ import com.zealouscoder.ld35.GenericGameObject;
 
 public interface PositionManipulator {
 
-	public GamePosition update(double dt, GamePosition position,
-			GenericGameObject go, Game game);
+	public GamePosition update(double dt, GenericGameObject go, Game game);
 
 }

@@ -8,8 +8,8 @@ import com.zealouscoder.ld35.GenericGameObject;
 public class DirectionManipulator implements PositionManipulator {
 
 	@Override
-	public GamePosition update(double dt, GamePosition pos, GenericGameObject go,
-			Game game) {
+	public GamePosition update(double dt, GenericGameObject go, Game game) {
+		GamePosition pos = go.getPosition();
 		double speed = go.getDouble(SPEED);
 		double direction = go.getDouble(DIRECTION);
 		double dx = dt * Math.cos(direction) * speed;

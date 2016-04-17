@@ -40,6 +40,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 	private ConcurrentLinkedQueue<GameEvent>		eventQueue						= new ConcurrentLinkedQueue<GameEvent>();
 	private Map<String, Set<GameEventHandler>>	eventHandlers					= new HashMap<String, Set<GameEventHandler>>();
 	private Map<String, GenericGameObject>			namedObjects					= new HashMap<String, GenericGameObject>();
+	private Map<String, Set<GenericGameObject>>	byTypeObjects					= new HashMap<String, Set<GenericGameObject>>();
 
 	public Game(String name) {
 		super(name);
@@ -53,6 +54,11 @@ public class Game extends Thread implements Renderable, GameConstants {
 			eventHandlers.put(eventType, handlers);
 		}
 		handlers.add(handler);
+	}
+
+	public GenericGameObject[] byType(String type) {
+		Set<GenericGameObject> set = byTypeObjects.get(type);
+		return set.toArray(new GenericGameObject[set.size()]);
 	}
 
 	public GenericGameObject get(String key) {
@@ -121,7 +127,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 		gameClock += dt;
 		if (!eventQueue.isEmpty()) {
 			consume(eventQueue, (event) -> {
-				Set<GameEventHandler> handlers = eventHandlers.get(event);
+				Set<GameEventHandler> handlers = eventHandlers.get(event.getType());
 				if (handlers != null) {
 					for (GameEventHandler handler : handlers) {
 						handler.handle(Game.this, event);
@@ -168,16 +174,28 @@ public class Game extends Thread implements Renderable, GameConstants {
 	}
 
 	private void addRenderable(Renderable r) {
-		Set<Renderable> layer = byLayer.get(r.getLayer());
-		if (layer == null) {
-			layer = new HashSet<Renderable>();
-			byLayer.put(r.getLayer(), layer);
+		if (r.isRenderable()) {
+			Set<Renderable> layer = byLayer.get(r.getLayer());
+			if (layer == null) {
+				layer = new HashSet<Renderable>();
+				byLayer.put(r.getLayer(), layer);
+			}
+			layer.add(r);
 		}
-		layer.add(r);
 		if (r instanceof GenericGameObject) {
 			GenericGameObject go = (GenericGameObject) r;
 			namedObjects.put(go.getId(), go);
+			addTypeObject(go);
 		}
+	}
+
+	private void addTypeObject(GenericGameObject go) {
+		Set<GenericGameObject> objs = byTypeObjects.get(go.getType());
+		if (objs == null) {
+			objs = new HashSet<GenericGameObject>();
+			byTypeObjects.put(go.getType(), objs);
+		}
+		objs.add(go);
 	}
 
 	private void removeRenderable(Renderable r) {
@@ -292,5 +310,10 @@ public class Game extends Thread implements Renderable, GameConstants {
 		props.put("keycode", keyCode);
 		props.put("action", action);
 		addEvent(new GameEvent("KeyEvent", props));
+	}
+
+	@Override
+	public boolean isRenderable() {
+		return this.getView() != null;
 	}
 }

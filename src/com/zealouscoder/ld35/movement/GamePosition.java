@@ -18,7 +18,7 @@ public class GamePosition {
 	}
 
 	public void visit(double dt, Game game, GenericGameObject go, PositionManipulator manipulator) {
-		GamePosition update = manipulator.update(dt, this, go, game);
+		GamePosition update = manipulator.update(dt, go, game);
 		if(game.isValid(go, update)) {
 			this.x = update.x;
 			this.y = update.y;

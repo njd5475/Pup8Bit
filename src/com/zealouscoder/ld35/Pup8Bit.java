@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.script.ScriptException;
 import javax.swing.JFrame;
 
+import com.zealouscoder.ld35.movement.DirectionManipulator;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.SwingRenderer;
@@ -17,7 +19,7 @@ import com.zealouscoder.ld35.scriptextension.ScriptExtension;
 
 public class Pup8Bit implements GameConstants {
 
-	private static Sprite									avatar;
+	private static GenericGameObject			avatar;
 	private static final Game							game			= new Game(NAME);
 	private static GameRenderContext			context		= GameRenderContext
 			.wrap(null);
@@ -34,10 +36,13 @@ public class Pup8Bit implements GameConstants {
 		BufferedImage img;
 		try {
 			img = ImageIO.read(stream);
-			avatar = new Sprite(context.loadImageResource("avatar", img),
+			Sprite sprite = new Sprite(context.loadImageResource("avatar", img),
 					img.getWidth(), img.getHeight(),
 					GamePosition.wrap(0, 0, game.getMapViewLayer().forLayer(20)));
-
+			Properties props = new Properties();
+			props.put(GameObjectProps.DIRECTION.name(), 0d);
+			props.put(GameObjectProps.SPEED.name(), 20d);
+			avatar = new GenericGameObject("avatar", "Player", sprite, props);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -56,6 +61,10 @@ public class Pup8Bit implements GameConstants {
 			}
 		});
 		game.add(avatar);
+		DirectionManipulator avatarController = new DirectionManipulator();
+		game.add((g, dt) -> {
+			avatar.getPosition().visit(dt, g, avatar, avatarController);
+		});
 		input.init(jframe);
 		jframe.setVisible(true);
 		try {

@@ -9,5 +9,7 @@ public interface Renderable extends Positioned {
 	public GameView getView();
 	
 	public int getLayer();
+
+	public boolean isRenderable();
 	
 }

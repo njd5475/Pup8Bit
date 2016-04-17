@@ -19,6 +19,7 @@ public class GenericGameObject implements Renderable {
 		this.type = type;
 		this.properties = properties;
 		this.sprite = sprite;
+		this.id = id;
 	}
 	
 	public String getId() {
@@ -73,5 +74,10 @@ public class GenericGameObject implements Renderable {
 
 	public boolean check(String key) {
 		return Boolean.parseBoolean(properties.getProperty(key));
+	}
+
+	@Override
+	public boolean isRenderable() {
+		return sprite != null;
 	}
 }
