@@ -33,6 +33,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 	private SortedMap<Integer, Set<Renderable>>	byLayer								= new TreeMap<Integer, Set<Renderable>>();
 	private ConcurrentLinkedQueue<Renderable>		renderableAddQueue		= new ConcurrentLinkedQueue<>();
 	private ConcurrentLinkedQueue<Renderable>		renderableRemoveQueue	= new ConcurrentLinkedQueue<>();
+	private GameView														mapViewLayer;
 
 	public Game(String name) {
 		super(name);
@@ -178,5 +179,12 @@ public class Game extends Thread implements Renderable, GameConstants {
 
 	public void quit() {
 		isGameRunning = false;
+	}
+
+	public GameView getMapViewLayer() {
+		if(mapViewLayer == null) {
+			mapViewLayer = GameView.getBuilder(getView()).scale(2, 2).build();
+		}
+		return mapViewLayer;
 	}
 }

@@ -45,5 +45,10 @@ public class ViewBuilder {
 		realBuilder.upALayer();
 		return this;
 	}
+
+	public ViewBuilder setLayer(int l) {
+		realBuilder.setLayer(l);
+		return this;
+	}
 	
 }

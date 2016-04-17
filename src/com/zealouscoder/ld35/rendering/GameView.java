@@ -113,6 +113,12 @@ public class GameView implements GameConstants {
 				newView.layer++;
 				return this;
 			}
+			
+			@Override
+			public ViewBuilder setLayer(int l) {
+				newView.layer = l;
+				return this;
+			}
 
 			@Override
 			public GameView build() {
@@ -124,6 +130,10 @@ public class GameView implements GameConstants {
 
 	public GameView upALayer() {
 		return getBuilder(this).upALayer().build();
+	}
+
+	public GameView forLayer(int l) {
+		return getBuilder(this).setLayer(l).build();
 	}
 
 }

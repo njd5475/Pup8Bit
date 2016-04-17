@@ -11,19 +11,20 @@ import com.zealouscoder.ld35.rendering.Renderable;
 
 public class Sprite implements Renderable {
 
-	private Image					image;
+	private ImageResource	image;
 	private GamePosition	position;
 	private int						height;
 	private int						width;
 
-	public Sprite(Image image, GamePosition position) {
+	public Sprite(ImageResource image, int width, int height,
+			GamePosition position) {
 		this.image = image;
 		this.position = position;
-		this.width = image.getWidth(null);
-		this.height = image.getHeight(null);
+		this.width = width;
+		this.height = height;
 	}
 
-	public Image getImage() {
+	public ImageResource getImage() {
 		return this.image;
 	}
 

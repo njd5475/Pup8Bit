@@ -1,9 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="8" tileheight="8">
- <tileset firstgid="1" source="Characters.tsx"/>
+ <tileset firstgid="1" name="Characters" tilewidth="8" tileheight="8">
+  <terraintypes>
+   <terrain name="Impassable" tile="-1"/>
+   <terrain name="New Terrain" tile="-1"/>
+  </terraintypes>
+  <tile id="0" terrain="0,0,1,1">
+   <image width="8" height="8" source="zombie.png"/>
+  </tile>
+  <tile id="1" terrain="0,0,1,1">
+   <image width="8" height="8" source="tree.png"/>
+  </tile>
+  <tile id="2" terrain="0,0,1,1">
+   <properties>
+    <property name="behavior" value="dog"/>
+   </properties>
+   <image width="8" height="8" source="puppy.png"/>
+  </tile>
+  <tile id="3">
+   <image width="8" height="8" source="northroad.png"/>
+  </tile>
+  <tile id="4">
+   <image width="8" height="8" source="grasspup.png"/>
+  </tile>
+  <tile id="5">
+   <image width="8" height="8" source="roadwesteast.png"/>
+  </tile>
+  <tile id="6">
+   <image width="8" height="8" source="crossroads.png"/>
+  </tile>
+  <tile id="7">
+   <image width="8" height="8" source="wolf.png"/>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="passable" value="false"/>
+   </properties>
+   <image width="8" height="8" source="rockpup.png"/>
+  </tile>
+ </tileset>
  <layer name="Tile Layer 1" width="100" height="100">
+  <properties>
+   <property name="layer" value="1"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJzt1UEOgCAMBMCqgP7/xR7gQPyADcxhkva2yaZpjYg6lGnmX8fo40qQZWdtcn/2liDfrs7o9/EkyELnfwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAreQHIjcNQ
+   eJzt0zkKACAMBMAUHv//sY2F+IEEnWJg0y0s6RHRt3Zk8tkj3zjM6x4F+v3Mf9RiDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAlC2jBw1Y=
   </data>
  </layer>
+ <layer name="Tile Layer 2" width="100" height="100">
+  <properties>
+   <property name="layer" value="2"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1bEKQCEIBVCXoP7/h1sKHvFcGnI5BwR1vA6OiBir4tPvmbfO3Huyp5Z71Dhzb8meN7Lc3aPG3x/3zwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODOBCA6ALk=
+  </data>
+ </layer>
+ <objectgroup name="Spawn Points">
+  <object gid="1" x="111.818" y="55.6364">
+   <properties>
+    <property name="spawn" value="avatar"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
