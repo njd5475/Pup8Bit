@@ -21,7 +21,6 @@ public class Pup8Bit implements GameConstants {
 	private static final MapLoader			mapLoader	= new MapLoader(
 			"resources/puplevel1.tmx", context, game);
 	private static final SwingRenderer	renderer	= new SwingRenderer();
-	private static final InputSystem		input			= new InputSystem(avatar, game);
 
 	static {
 		System.setProperty("sun.java2d.opengl", "True");
@@ -40,6 +39,8 @@ public class Pup8Bit implements GameConstants {
 		}
 	}
 
+	private static final InputSystem		input			= new InputSystem(avatar, game);
+	
 	public static void main(String[] args) throws IOException {
 		game.start();
 		GameComponent comp = new GameComponent(game, context, renderer);
