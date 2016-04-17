@@ -25,4 +25,18 @@ public class GenericGameObject {
 	public Sprite getSprite() {
 		return sprite;
 	}
+
+	public double getDouble(String key) {
+		properties.get(key);
+		return 0;
+	}
+
+	public double getDouble(GameObjectProps prop) {
+		Object obj = properties.get(prop.toString());
+		if(obj instanceof Number) {
+			Number number = (Number) obj;
+			return number.doubleValue();
+		}
+		return 0;
+	}
 }

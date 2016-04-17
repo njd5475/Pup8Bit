@@ -1,8 +1,7 @@
-package com.zealouscoder.ld35.rendering;
+package com.zealouscoder.ld35.movement;
 
 import com.zealouscoder.ld35.Game;
 import com.zealouscoder.ld35.Sprite;
-import com.zealouscoder.ld35.movement.PositionUpdater;
 
 public class RelativePosition extends GamePosition {
 

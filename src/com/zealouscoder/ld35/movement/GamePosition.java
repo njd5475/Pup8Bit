@@ -1,6 +1,6 @@
-package com.zealouscoder.ld35.rendering;
+package com.zealouscoder.ld35.movement;
 
-import com.zealouscoder.ld35.movement.PositionUpdater;
+import com.zealouscoder.ld35.rendering.GameView;
 
 public class GamePosition {
 
@@ -34,6 +34,10 @@ public class GamePosition {
 	
 	public int getLayer() {
 		return view.getLayer();
+	}
+	
+	public GamePosition clone() {
+		return wrap(x,y,view);
 	}
 
 	public static GamePosition wrap(double x, double y, GameView view) {

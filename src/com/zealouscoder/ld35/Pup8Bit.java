@@ -8,7 +8,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import com.zealouscoder.ld35.rendering.GamePosition;
+import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.SwingRenderer;
 import com.zealouscoder.ld35.rendering.swing.GameComponent;

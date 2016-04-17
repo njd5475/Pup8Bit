@@ -14,6 +14,8 @@ import java.util.Map;
 
 import com.zealouscoder.ld35.ImageResource;
 import com.zealouscoder.ld35.Sprite;
+import com.zealouscoder.ld35.movement.GamePosition;
+import com.zealouscoder.ld35.movement.Positioned;
 
 public class GameRenderContext {
 

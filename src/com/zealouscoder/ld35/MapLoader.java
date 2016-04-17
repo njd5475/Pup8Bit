@@ -3,7 +3,7 @@ package com.zealouscoder.ld35;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.zealouscoder.ld35.rendering.GamePosition;
+import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.GameView;
 

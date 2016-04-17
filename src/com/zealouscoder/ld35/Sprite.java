@@ -2,11 +2,11 @@ package com.zealouscoder.ld35;
 
 import java.awt.Image;
 
-import com.zealouscoder.ld35.rendering.GamePosition;
+import com.zealouscoder.ld35.movement.GamePosition;
+import com.zealouscoder.ld35.movement.RelativePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.GameRenderer;
 import com.zealouscoder.ld35.rendering.GameView;
-import com.zealouscoder.ld35.rendering.RelativePosition;
 import com.zealouscoder.ld35.rendering.Renderable;
 
 public class Sprite implements Renderable {

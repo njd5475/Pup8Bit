@@ -1,4 +1,4 @@
-package com.zealouscoder.ld35.rendering;
+package com.zealouscoder.ld35.movement;
 
 public interface Positioned {
 
