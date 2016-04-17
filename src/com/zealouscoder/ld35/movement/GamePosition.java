@@ -1,5 +1,7 @@
 package com.zealouscoder.ld35.movement;
 
+import com.zealouscoder.ld35.Game;
+import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.rendering.GameView;
 
 public class GamePosition {
@@ -15,9 +17,13 @@ public class GamePosition {
 		this.y = y;
 	}
 
-	public void visit(PositionUpdater updater) {
-		this.x += updater.getX();
-		this.y += updater.getY();
+	public void visit(double dt, Game game, GenericGameObject go, PositionManipulator manipulator) {
+		GamePosition update = manipulator.update(dt, this, go, game);
+		if(game.isValid(go, update)) {
+			this.x = update.x;
+			this.y = update.y;
+			this.view = update.view;
+		}
 	}
 	
 	public double getX() {
@@ -42,5 +48,23 @@ public class GamePosition {
 
 	public static GamePosition wrap(double x, double y, GameView view) {
 		return new GamePosition(x, y, view);
+	}
+
+	/**
+	 * Rough estimate of distance without taking into account details
+	 * @param update
+	 * @return
+	 */
+	public boolean isClose(GamePosition update) {
+		if(this.getLayer() == update.getLayer()) {
+			return distSq(update) < (update.view.getRadiusSq()*2);
+		}
+		return false;
+	}
+
+	public double distSq(GamePosition update) {
+		double dx = (x - update.getX());
+		double dy = (y - update.getY());
+		return dx*dx + dy*dy;
 	}
 }

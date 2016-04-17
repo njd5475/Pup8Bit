@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
@@ -11,10 +12,12 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-import com.zealouscoder.ld35.rendering.GameRenderer;
-import com.zealouscoder.ld35.rendering.GameView;
+import com.zealouscoder.ld35.movement.GameEventHandler;
+import com.zealouscoder.ld35.movement.GameEvent;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
+import com.zealouscoder.ld35.rendering.GameRenderer;
+import com.zealouscoder.ld35.rendering.GameView;
 import com.zealouscoder.ld35.rendering.Renderable;
 import com.zealouscoder.ld35.rendering.Updater;
 
@@ -34,10 +37,26 @@ public class Game extends Thread implements Renderable, GameConstants {
 	private ConcurrentLinkedQueue<Renderable>		renderableAddQueue		= new ConcurrentLinkedQueue<>();
 	private ConcurrentLinkedQueue<Renderable>		renderableRemoveQueue	= new ConcurrentLinkedQueue<>();
 	private GameView														mapViewLayer;
+	private ConcurrentLinkedQueue<GameEvent>		eventQueue						= new ConcurrentLinkedQueue<GameEvent>();
+	private Map<String, Set<GameEventHandler>>	eventHandlers					= new HashMap<String, Set<GameEventHandler>>();
+	private Map<String, GenericGameObject>			namedObjects					= new HashMap<String, GenericGameObject>();
 
 	public Game(String name) {
 		super(name);
 		this.name = name;
+	}
+
+	public void addEventHandler(String eventType, GameEventHandler handler) {
+		Set<GameEventHandler> handlers = eventHandlers.get(eventType);
+		if (handlers == null) {
+			handlers = new HashSet<GameEventHandler>();
+			eventHandlers.put(eventType, handlers);
+		}
+		handlers.add(handler);
+	}
+
+	public GenericGameObject get(String key) {
+		return namedObjects.get(key);
 	}
 
 	public String getGameName() {
@@ -62,6 +81,10 @@ public class Game extends Thread implements Renderable, GameConstants {
 
 	public void remove(Renderable renderable) {
 		renderableRemoveQueue.add(renderable);
+	}
+
+	public void addEvent(GameEvent event) {
+		eventQueue.add(event);
 	}
 
 	@Override
@@ -96,6 +119,16 @@ public class Game extends Thread implements Renderable, GameConstants {
 
 	private void update(double dt) {
 		gameClock += dt;
+		if (!eventQueue.isEmpty()) {
+			consume(eventQueue, (event) -> {
+				Set<GameEventHandler> handlers = eventHandlers.get(event);
+				if (handlers != null) {
+					for (GameEventHandler handler : handlers) {
+						handler.handle(Game.this, event);
+					}
+				}
+			});
+		}
 		for (Updater updater : updaters) {
 			updater.update(this, dt);
 		}
@@ -105,34 +138,59 @@ public class Game extends Thread implements Renderable, GameConstants {
 		// empty waiting queue
 		if (!updaterAddQueue.isEmpty()) {
 			consume(updaterAddQueue, (upd) -> {
-				updaters.add(upd);
+				addUpdater(upd);
 			});
 		}
 		if (!updaterRemoveQueue.isEmpty()) {
 			consume(updaterRemoveQueue, (upd) -> {
-				updaters.remove(upd);
+				removeUpdater(upd);
 			});
 		}
 		if (!renderableAddQueue.isEmpty()) {
 			consume(renderableAddQueue, (r) -> {
-				Set<Renderable> layer = byLayer.get(r.getLayer());
-				if (layer == null) {
-					layer = new HashSet<Renderable>();
-					byLayer.put(r.getLayer(), layer);
-				}
-				layer.add(r);
+				addRenderable(r);
+
 			});
 		}
 		if (!renderableRemoveQueue.isEmpty()) {
 			consume(renderableRemoveQueue, (r) -> {
-				Set<Renderable> layer = byLayer.get(r.getLayer());
-				if (layer != null) {
-					layer.remove(r);
-					if (layer.isEmpty()) {
-						byLayer.remove(r.getLayer());
-					}
-				}
+				removeRenderable(r);
 			});
+		}
+	}
+
+	private void addUpdater(Updater updater) {
+		updaters.add(updater);
+	}
+
+	private void removeUpdater(Updater updater) {
+		updaters.remove(updater);
+	}
+
+	private void addRenderable(Renderable r) {
+		Set<Renderable> layer = byLayer.get(r.getLayer());
+		if (layer == null) {
+			layer = new HashSet<Renderable>();
+			byLayer.put(r.getLayer(), layer);
+		}
+		layer.add(r);
+		if (r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			namedObjects.put(go.getId(), go);
+		}
+	}
+
+	private void removeRenderable(Renderable r) {
+		Set<Renderable> layer = byLayer.get(r.getLayer());
+		if (layer != null) {
+			layer.remove(r);
+			if (layer.isEmpty()) {
+				byLayer.remove(r.getLayer());
+			}
+		}
+		if (r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			namedObjects.remove(go.getId());
 		}
 	}
 
@@ -182,9 +240,57 @@ public class Game extends Thread implements Renderable, GameConstants {
 	}
 
 	public GameView getMapViewLayer() {
-		if(mapViewLayer == null) {
+		if (mapViewLayer == null) {
 			mapViewLayer = GameView.getBuilder(getView()).scale(2, 2).build();
 		}
 		return mapViewLayer;
+	}
+
+	public boolean isValid(GenericGameObject go, GamePosition update) {
+		for (Renderable nearby : neighbors(go, update)) {
+			if (!isPassable(nearby) && collides(nearby, go, update)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isPassable(Renderable nearby) {
+		if (nearby instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) nearby;
+			return go.check("passable");
+		}
+		return false;
+	}
+
+	private boolean collides(Renderable nearby, GenericGameObject go,
+			GamePosition update) {
+		if (nearby.getLayer() == update.getLayer()) {
+			double radiusSq = go.getView().getRadiusSq()
+					+ nearby.getView().getRadiusSq();
+			return nearby.getPosition().distSq(update) <= radiusSq * radiusSq;
+		}
+		return false;
+	}
+
+	private Renderable[] neighbors(GenericGameObject go, GamePosition update) {
+		Set<Renderable> nearbys = new HashSet<Renderable>();
+		for (Renderable r : byLayer.get(update.getLayer())) {
+			if (isClose(r, update)) {
+				nearbys.add(r);
+			}
+		}
+		return nearbys.toArray(new Renderable[nearbys.size()]);
+	}
+
+	private boolean isClose(Renderable r, GamePosition update) {
+		return r.getPosition().isClose(update);
+	}
+
+	public void dispatchKeyEvent(int keyCode, String action) {
+		Properties props = new Properties();
+		props.put("keycode", keyCode);
+		props.put("action", action);
+		addEvent(new GameEvent("KeyEvent", props));
 	}
 }

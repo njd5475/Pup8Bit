@@ -2,16 +2,27 @@ package com.zealouscoder.ld35;
 
 import java.util.Properties;
 
-public class GenericGameObject {
+import com.zealouscoder.ld35.movement.GamePosition;
+import com.zealouscoder.ld35.rendering.GameRenderContext;
+import com.zealouscoder.ld35.rendering.GameRenderer;
+import com.zealouscoder.ld35.rendering.GameView;
+import com.zealouscoder.ld35.rendering.Renderable;
+
+public class GenericGameObject implements Renderable {
 
 	private String			type;
+	private String			id;
 	private Sprite			sprite;
 	private Properties	properties;
-
-	public GenericGameObject(String type, Sprite sprite, Properties properties) {
+	
+	public GenericGameObject(String id, String type, Sprite sprite, Properties properties) {
 		this.type = type;
 		this.properties = properties;
 		this.sprite = sprite;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public Properties getProperties() {
@@ -38,5 +49,29 @@ public class GenericGameObject {
 			return number.doubleValue();
 		}
 		return 0;
+	}
+
+	@Override
+	public GamePosition getPosition() {
+		return sprite.getPosition();
+	}
+
+	@Override
+	public void render(GameRenderContext rc, GameRenderer renderer) {
+		renderer.render(rc, this);
+	}
+
+	@Override
+	public GameView getView() {
+		return sprite.getView();
+	}
+
+	@Override
+	public int getLayer() {
+		return sprite.getLayer();
+	}
+
+	public boolean check(String key) {
+		return Boolean.parseBoolean(properties.getProperty(key));
 	}
 }

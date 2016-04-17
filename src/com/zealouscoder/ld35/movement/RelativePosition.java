@@ -1,7 +1,7 @@
 package com.zealouscoder.ld35.movement;
 
 import com.zealouscoder.ld35.Game;
-import com.zealouscoder.ld35.Sprite;
+import com.zealouscoder.ld35.GenericGameObject;
 
 public class RelativePosition extends GamePosition {
 
@@ -13,8 +13,9 @@ public class RelativePosition extends GamePosition {
 	}
 
 	@Override
-	public void visit(PositionUpdater updater) {
-		position.visit(updater);
+	public void visit(double dt, Game game, GenericGameObject go,
+			PositionManipulator manipulator) {
+		position.visit(dt, game, go, manipulator);
 	}
 
 	@Override

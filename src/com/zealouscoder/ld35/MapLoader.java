@@ -64,11 +64,9 @@ public class MapLoader {
 						if (t != null) {
 							Sprite sprite = new Sprite(images.get(t.getId()), t.getWidth(),
 									t.getHeight(), GamePosition.wrap(x * 5, y * 5, layerView));
-							game.add(sprite);
-							// System.out.format("%d-%d-%d\n", t.getId(), x, y);
-							if (t.getProperties().size() > 0) {
-								t.getProperties().list(System.out);
-							}
+							GenericGameObject go = new GenericGameObject("tile" + x + ":" + y,
+									"tile" + t.getId(), sprite, t.getProperties());
+							game.add(go);
 						}
 					}
 				}

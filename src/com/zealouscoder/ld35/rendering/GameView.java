@@ -58,6 +58,12 @@ public class GameView implements GameConstants {
 	public double getHeight() {
 		return height;
 	}
+	
+	public double getRadiusSq() {
+		double halfW = width/2d;
+		double halfH = height/2d;
+		return halfW*halfW + halfH * halfH;
+	}
 
 	public static ViewBuilder getBuilder(GameView view) {
 		return getBuilder().copyView(view);
@@ -134,6 +140,10 @@ public class GameView implements GameConstants {
 
 	public GameView forLayer(int l) {
 		return getBuilder(this).setLayer(l).build();
+	}
+
+	public int getRadius() {
+		return 0;
 	}
 
 }

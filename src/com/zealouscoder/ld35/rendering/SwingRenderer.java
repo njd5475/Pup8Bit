@@ -1,6 +1,7 @@
 package com.zealouscoder.ld35.rendering;
 
 import com.zealouscoder.ld35.Game;
+import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.Sprite;
 
 public class SwingRenderer extends GameRenderer {
@@ -23,6 +24,11 @@ public class SwingRenderer extends GameRenderer {
 	public void render(GameRenderContext rc, Sprite sprite) {
 		rc.toPosition(sprite);
 		rc.drawSprite(sprite);
+	}
+
+	@Override
+	public void render(GameRenderContext rc, GenericGameObject go) {
+		render(rc, go.getSprite());
 	}
 
 }
