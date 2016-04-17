@@ -80,4 +80,8 @@ public class GenericGameObject implements Renderable {
 	public boolean isRenderable() {
 		return sprite != null;
 	}
+
+    public Object get(String propKey) {
+        return properties.get(propKey);
+    }
 }
