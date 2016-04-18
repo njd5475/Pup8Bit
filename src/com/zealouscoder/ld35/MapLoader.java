@@ -2,6 +2,7 @@ package com.zealouscoder.ld35;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
@@ -43,9 +44,12 @@ public class MapLoader {
 				System.out.println("Found object group layer");
 				ObjectGroup objs = (ObjectGroup) layer;
 				objs.forEach((obj) -> {
+					Properties objProps = obj.getProperties();
+					objProps.put("SpawnPosition", GamePosition.wrap(obj.getX(),
+							obj.getY(), game.getMapViewLayer()));
 					GenericGameObject go = new GenericGameObject(
 							"obj" + obj.getX() + ":" + obj.getY(), obj.getType(), null,
-							obj.getProperties());
+							objProps);
 					game.add(go);
 					System.out.println(obj.getType());
 				});
@@ -66,7 +70,10 @@ public class MapLoader {
 						Tile t = tL.getTileAt(x, y);
 						if (t != null) {
 							Sprite sprite = new Sprite(images.get(t.getId()), t.getWidth(),
-									t.getHeight(), GamePosition.wrap(x * 5, y * 5, layerView));
+									t.getHeight(), GamePosition.wrap(x * t.getWidth(),
+											y * t.getHeight(), layerView));
+							System.out.format("Tile at %d,%d with size %d,%d\n", x, y,
+									t.getWidth(), t.getHeight());
 							GenericGameObject go = new GenericGameObject("tile" + x + ":" + y,
 									"tile" + t.getId(), sprite, t.getProperties());
 							game.add(go);

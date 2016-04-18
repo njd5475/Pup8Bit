@@ -1,6 +1,5 @@
 package com.zealouscoder.ld35.movement;
 
-import java.awt.event.KeyEvent;
 import java.util.Properties;
 
 public class GameEvent {

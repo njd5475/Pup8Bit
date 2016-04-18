@@ -21,30 +21,29 @@ game.addEventHandler("KeyEvent", function(game, event) {
 	} else {
 		keyStates[keyCode] = action;
 	}
-});
 
-game.add(function(game, dt) {
-	var x=0,y=0;
+	var x = 0, y = 0;
 	if (keyStates[K.VK_UP] == 'pressed') {
-		y = 1;
-	}
-	if (keyStates[K.VK_DOWN] == 'pressed') {
 		y = -1;
 	}
+	if (keyStates[K.VK_DOWN] == 'pressed') {
+		y = 1;
+	}
 	if (keyStates[K.VK_LEFT] == 'pressed') {
-		x = -1
+		x = -1;
 	}
 	if (keyStates[K.VK_RIGHT] == 'pressed') {
 		x = 1;
 	}
-	var direction = (Math.atan2(y,x)*180)/Math.PI;
-	var avatar = game.get('avatar');
+	var avatar = game.get('avatar');	
 	if (avatar) {
-		if (direction > -1) {
+		if(x != 0 || y != 0) {
+			var direction = (Math.atan2(y, x) * 180) / Math.PI;
+			print("direction=" + direction);
 			avatar.getProperties().SPEED = 20;
 			avatar.getProperties().DIRECTION = direction;
-		} else {
+		}else{
 			avatar.getProperties().SPEED = 0;
 		}
 	}
-})
+});

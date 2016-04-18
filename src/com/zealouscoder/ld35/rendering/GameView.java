@@ -1,5 +1,7 @@
 package com.zealouscoder.ld35.rendering;
 
+import java.awt.geom.AffineTransform;
+
 import com.zealouscoder.ld35.GameConstants;
 
 public class GameView implements GameConstants {
@@ -25,6 +27,14 @@ public class GameView implements GameConstants {
 		this.width = width;
 		this.height = height;
 		this.layer = layer;
+	}
+	
+	public AffineTransform getTransform() {
+		AffineTransform transform = new AffineTransform();
+		transform.scale(scaleX, scaleY);
+		transform.rotate(rot);
+		transform.translate(startx, starty);
+		return transform;
 	}
 
 	public double getX() {
@@ -142,8 +152,7 @@ public class GameView implements GameConstants {
 		return getBuilder(this).setLayer(l).build();
 	}
 
-	public int getRadius() {
-		return 0;
+	public GameView scale(double scaleX, double scaleY) {
+		return getBuilder(this).scale(scaleX, scaleY).build();
 	}
-
 }

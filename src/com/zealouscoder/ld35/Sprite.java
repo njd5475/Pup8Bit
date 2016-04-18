@@ -1,9 +1,8 @@
 package com.zealouscoder.ld35;
 
-import java.awt.Image;
-
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.movement.RelativePosition;
+import com.zealouscoder.ld35.rendering.GameObjectBound;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.GameRenderer;
 import com.zealouscoder.ld35.rendering.GameView;
@@ -11,10 +10,11 @@ import com.zealouscoder.ld35.rendering.Renderable;
 
 public class Sprite implements Renderable {
 
-	private ImageResource	image;
-	private GamePosition	position;
-	private int						height;
-	private int						width;
+	private ImageResource		image;
+	private GamePosition		position;
+	private int							height;
+	private int							width;
+	private GameObjectBound	bounds;
 
 	public Sprite(ImageResource image, int width, int height,
 			GamePosition position) {
@@ -29,8 +29,8 @@ public class Sprite implements Renderable {
 	}
 
 	@Override
-	public void render(GameRenderContext rc, GameRenderer renderer) {
-		renderer.render(rc, this);
+	public void render(GameRenderContext rc, Game game, GameRenderer renderer) {
+		renderer.render(rc, game, this);
 	}
 
 	@Override
@@ -67,6 +67,14 @@ public class Sprite implements Renderable {
 	@Override
 	public boolean isRenderable() {
 		return true;
+	}
+
+	@Override
+	public GameObjectBound getBounds() {
+		if (bounds == null) {
+			bounds = new GameObjectBound(width, height);
+		}
+		return bounds;
 	}
 
 }

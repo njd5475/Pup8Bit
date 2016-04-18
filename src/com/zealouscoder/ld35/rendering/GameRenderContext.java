@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.ImageResource;
 import com.zealouscoder.ld35.Sprite;
 import com.zealouscoder.ld35.movement.GamePosition;
@@ -23,6 +24,56 @@ public class GameRenderContext {
 	private Map<ImageResource, Image>	images	= new HashMap<ImageResource, Image>();
 
 	private GameRenderContext() {
+	}
+
+	public void toView(GameView view) {
+		g.setTransform(view.getTransform());
+	}
+
+	public void toPosition(Positioned positioned) {
+		GamePosition pos = positioned.getPosition();
+		toView(pos.getView());
+		g.translate(pos.getX(), pos.getY());
+	}
+
+	void drawAsText(int i, int j, String format) {
+		g.setColor(Color.white);
+		g.drawString(format, i, j + 20);
+	}
+
+	public void drawSprite(Sprite sprite) {
+		toPosition(sprite);
+		g.setComposite(AlphaComposite.SrcOver);
+		g.drawImage(images.get(sprite.getImage()), 0, 0, sprite.getWidth(),
+				sprite.getHeight(), null);
+	}
+
+	public void drawDebug(Renderable r, Color override) {
+		GameObjectBound bounds = r.getBounds();
+		boolean passable = true;
+		if(r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			if(go.getProperties().containsKey("passable")) {
+				passable = go.check("passable");
+			}
+		}
+		if(passable) {
+			g.setColor(Color.yellow);
+		}else{
+			g.setColor(Color.red);
+		}
+		if(override != null) {
+			g.setColor(override);
+		}
+		g.drawRect(0,0,(int)bounds.getWidth(),(int)bounds.getHeight());
+	}
+
+	protected void finalize() {
+		g.dispose();
+	}
+
+	public GameRenderContext clone() {
+		return wrap(this, (Graphics2D) g.create());
 	}
 
 	public ImageResource loadImageResource(String id, Image image) {
@@ -46,42 +97,6 @@ public class GameRenderContext {
 		return rc;
 	}
 
-	public Graphics2D getGraphics2D() {
-		return g;
-	}
-
-	public void toView(GameView view) {
-		g.translate(view.getX(), view.getY());
-		g.scale(view.getScaleX(), view.getScaleY());
-		g.rotate(view.getRotation());
-	}
-
-	public void toPosition(Positioned positioned) {
-		GamePosition pos = positioned.getPosition();
-		toView(pos.getView());
-		g.translate(pos.getX(), pos.getY());
-	}
-
-	void drawAsText(int i, int j, String format) {
-		g.setColor(Color.white);
-		g.drawString(format, i, j + 20);
-	}
-
-	public void drawSprite(Sprite sprite) {
-		toPosition(sprite);
-		g.setComposite(AlphaComposite.SrcOver);
-		g.drawImage(images.get(sprite.getImage()), 0, 0, sprite.getWidth(),
-				sprite.getHeight(), null);
-	}
-
-	protected void finalize() {
-		g.dispose();
-	}
-
-	public GameRenderContext clone() {
-		return wrap(this, (Graphics2D) g.create());
-	}
-
 	private static Image adjustImage(Image image) {
 		return adjustImage(image, getConfig());
 	}
@@ -100,4 +115,5 @@ public class GameRenderContext {
 		return GraphicsEnvironment.getLocalGraphicsEnvironment()
 				.getDefaultScreenDevice().getDefaultConfiguration();
 	}
+
 }

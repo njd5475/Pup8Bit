@@ -8,8 +8,9 @@ public abstract class GameRenderer {
 
 	public abstract void render(GameRenderContext rc, Game game);
 
-	public abstract void render(GameRenderContext rc, Sprite sprite);
+	public abstract void render(GameRenderContext rc, Game game, Sprite sprite);
 
-	public abstract void render(GameRenderContext rc, GenericGameObject go);
+	public abstract void render(GameRenderContext rc, Game game,
+			GenericGameObject go);
 
 }

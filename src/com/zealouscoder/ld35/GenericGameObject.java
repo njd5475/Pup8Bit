@@ -3,6 +3,7 @@ package com.zealouscoder.ld35;
 import java.util.Properties;
 
 import com.zealouscoder.ld35.movement.GamePosition;
+import com.zealouscoder.ld35.rendering.GameObjectBound;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.GameRenderer;
 import com.zealouscoder.ld35.rendering.GameView;
@@ -58,8 +59,8 @@ public class GenericGameObject implements Renderable {
 	}
 
 	@Override
-	public void render(GameRenderContext rc, GameRenderer renderer) {
-		renderer.render(rc, this);
+	public void render(GameRenderContext rc, Game game, GameRenderer renderer) {
+		renderer.render(rc, game, this);
 	}
 
 	@Override
@@ -84,4 +85,9 @@ public class GenericGameObject implements Renderable {
     public Object get(String propKey) {
         return properties.get(propKey);
     }
+
+		@Override
+		public GameObjectBound getBounds() {
+			return sprite.getBounds();
+		}
 }

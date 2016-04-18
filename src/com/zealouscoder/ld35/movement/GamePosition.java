@@ -2,14 +2,16 @@ package com.zealouscoder.ld35.movement;
 
 import com.zealouscoder.ld35.Game;
 import com.zealouscoder.ld35.GenericGameObject;
+import com.zealouscoder.ld35.Sprite;
 import com.zealouscoder.ld35.rendering.GameView;
+import com.zealouscoder.ld35.rendering.Renderable;
 
 public class GamePosition {
 
-	public static final GamePosition ANCHOR = wrap(0,0,GameView.ANCHOR);
-	private double	x	= 0;
-	private double	y	= 0;
-	private GameView		view;
+	public static final GamePosition	ANCHOR	= wrap(0, 0, GameView.ANCHOR);
+	private double										x				= 0;
+	private double										y				= 0;
+	private GameView									view;
 
 	protected GamePosition(double x, double y, GameView view) {
 		this.view = view;
@@ -17,15 +19,16 @@ public class GamePosition {
 		this.y = y;
 	}
 
-	public void visit(double dt, Game game, GenericGameObject go, PositionManipulator manipulator) {
+	public void visit(double dt, Game game, GenericGameObject go,
+			PositionManipulator manipulator) {
 		GamePosition update = manipulator.update(dt, go, game);
-		if(game.isValid(go, update)) {
+		if (game.isValid(go, update)) {
 			this.x = update.x;
 			this.y = update.y;
 			this.view = update.view;
 		}
 	}
-	
+
 	public double getX() {
 		return x;
 	}
@@ -37,13 +40,13 @@ public class GamePosition {
 	public GameView getView() {
 		return view;
 	}
-	
+
 	public int getLayer() {
 		return view.getLayer();
 	}
-	
+
 	public GamePosition clone() {
-		return wrap(x,y,view);
+		return wrap(x, y, view);
 	}
 
 	public static GamePosition wrap(double x, double y, GameView view) {
@@ -52,19 +55,17 @@ public class GamePosition {
 
 	/**
 	 * Rough estimate of distance without taking into account details
+	 * 
 	 * @param update
 	 * @return
 	 */
-	public boolean isClose(GamePosition update) {
-		if(this.getLayer() == update.getLayer()) {
-			return distSq(update) < (update.view.getRadiusSq()*2);
-		}
-		return false;
+	public boolean isClose(Renderable r) {
+		return distSq(r.getPosition()) < (r.getBounds().getRadiusSq()*10);
 	}
 
 	public double distSq(GamePosition update) {
 		double dx = (x - update.getX());
 		double dy = (y - update.getY());
-		return dx*dx + dy*dy;
+		return dx * dx + dy * dy;
 	}
 }
