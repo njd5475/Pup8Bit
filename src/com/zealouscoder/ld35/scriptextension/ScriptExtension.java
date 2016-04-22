@@ -12,7 +12,7 @@ import com.zealouscoder.ld35.Game;
 
 public class ScriptExtension {
 
-	private ScriptEngine engine;
+	protected ScriptEngine engine;
 
 	public ScriptExtension(Game game) {
 		engine = new ScriptEngineManager().getEngineByName("nashorn");
