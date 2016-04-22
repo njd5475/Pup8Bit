@@ -24,7 +24,7 @@ public class ScriptExtensionCoffee extends ScriptExtension {
         super(game);
         compiler = (Compilable) engine;
 
-        URL coffeeUri = getResource("coffee-script.js");
+        URL coffeeUri = getLocalResource("coffee-script.js");
         try {
             String coffee = getFile(coffeeUri.toURI());
             coffee += "\nCoffeeScript.compile(__source__, {bare: true});";
@@ -57,13 +57,7 @@ public class ScriptExtensionCoffee extends ScriptExtension {
         return new String(Files.readAllBytes(Paths.get(uri)));
     }
     
-    public static void main(String...args) throws ScriptException, IOException {
-        ScriptExtensionCoffee s = new ScriptExtensionCoffee(null);
-        System.out.println(s.getFile("resources/init.coffee"));
-        System.out.println(s.convertToJs(s.getFile("resources/init.coffee")));
-    }
-    
-    public URL getResource(String resource) {
-        return this.getClass().getClassLoader().getResource(resource);
+    public URL getLocalResource(String resource) {
+        return this.getClass().getResource(resource);
     }
 }

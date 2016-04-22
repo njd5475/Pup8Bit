@@ -11,13 +11,13 @@ import javax.script.ScriptException;
 import javax.swing.JFrame;
 
 import com.zealouscoder.ld35.movement.CoordinateManipulator;
-import com.zealouscoder.ld35.movement.DirectionManipulator;
 import com.zealouscoder.ld35.movement.GameEvent;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.GameRenderContext;
 import com.zealouscoder.ld35.rendering.SwingRenderer;
 import com.zealouscoder.ld35.rendering.swing.GameComponent;
 import com.zealouscoder.ld35.scriptextension.ScriptExtension;
+import com.zealouscoder.ld35.scriptextension.ScriptExtensionCoffee;
 
 public class Pup8Bit implements GameConstants {
 
@@ -26,7 +26,7 @@ public class Pup8Bit implements GameConstants {
     private static boolean               avatarCreated = false;
     private static final MapLoader       mapLoader     = new MapLoader("resources/puplevel1.tmx", context, game);
     private static final SwingRenderer   renderer      = new SwingRenderer();
-    private static final ScriptExtension scripts       = new ScriptExtension(game);
+    private static final ScriptExtension scripts       = new ScriptExtensionCoffee(game);
 
     static {
         System.setProperty("sun.java2d.opengl", "True");

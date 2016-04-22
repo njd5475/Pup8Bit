@@ -26,6 +26,5 @@ game.addEventHandler 'KeyEvent', (game, event) ->
     avatar.getProperties().SPEED = 0
     if x != 0 or y != 0
       direction = Math.atan2(y, x) * 180 / Math.PI
-      print 'direction=' + direction
       avatar.getProperties().SPEED = 20
       avatar.getProperties().DIRECTION = direction
