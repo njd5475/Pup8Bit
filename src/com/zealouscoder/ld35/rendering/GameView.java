@@ -16,6 +16,7 @@ public class GameView implements GameConstants {
 	private double								width;
 	private double								height;
 	private int										layer;
+    private AffineTransform transform;
 
 	protected GameView(double startx, double starty, double scaleX, double scaleY,
 			double rot, double width, double height, int layer) {
@@ -30,14 +31,16 @@ public class GameView implements GameConstants {
 	}
 	
 	public AffineTransform getTransform() {
-		AffineTransform transform = new AffineTransform();
-		transform.scale(scaleX, scaleY);
-		transform.rotate(rot);
-		transform.translate(startx, starty);
+	    if(transform == null) {
+    		transform = new AffineTransform();
+    		transform.scale(scaleX, scaleY);
+    		transform.rotate(rot);
+    		transform.translate(startx, starty);
+	    }
 		return transform;
 	}
 
-	public double getX() {
+    public double getX() {
 		return startx;
 	}
 

@@ -45,6 +45,8 @@ public class Game extends Thread implements Renderable, GameConstants {
             .synchronizedMap(new HashMap<String, GenericGameObject>());
     private Map<String, Set<GenericGameObject>> byTypeObjects         = new HashMap<String, Set<GenericGameObject>>();
     private GameObjectBound                     bounds;
+    private GameState                           currentState;
+    private Object                              gcObject              = new Object();
 
     public Game(String name) {
         super(name);
