@@ -51,6 +51,11 @@ public class Game extends Thread implements Renderable, GameConstants {
     public Game(String name) {
         super(name);
         this.name = name;
+        add((g, dt) -> {
+            if(g.every(2, gcObject)) {
+                System.gc();
+            }
+        });
     }
 
     public void addEventHandler(String eventType, GameEventHandler handler) {

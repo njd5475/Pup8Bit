@@ -20,19 +20,41 @@ In script files inside the state init method
 
 ## Loading Images
 
-In the main init.coffee file that gets executed place a line there to load assets
+In the main init.coffee file that gets executed place a line there to load 
+assets
 
 	loadImage 'resources/puppy.png'
 
 ## Spawning Entities
 
-You can use the main `game` object. 
+You can use the main `game` object to spawn new entities in an around different 
+`views` on the screen.
 
-## Handling Input
+Spawn an entity with
 
+	game.add 
 
+## Event Handling
 
-## Movement and Mechanics
+Pup has an event dispatching service. You can trigger events using
+
+	myEvent = new GameEvent("CustomEvent")
+	game.addEvent myEvent
+
+And you can add listeners for events
+
+	game.addEventHandler "CustomEvent", (game, event) ->
+		print "Handling " + event.getName() + " that's all!"
+
+## AI, Movement and Mechanics
+
+I am going to integrate my behavior tree library and hopefully use this 
+opportunity to add a behavior tree builder to that library.
+
+## Todo
+
+* Move all custom game code into script
+* Add asset management system
 
 ## Contributions Welcome
 

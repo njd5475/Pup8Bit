@@ -48,6 +48,7 @@ public class Pup8Bit implements GameConstants {
         CoordinateManipulator avatarControllerX = new CoordinateManipulator(true);
         CoordinateManipulator avatarControllerY = new CoordinateManipulator(false);
 
+        // TODO: extract into script
         game.add((g, dt) -> {
             if (!avatarCreated) {
                 GenericGameObject gp = game.getFirst("spawn", "avatar");
@@ -57,10 +58,12 @@ public class Pup8Bit implements GameConstants {
                 game.add(avatar);
                 avatarCreated = true;
             }
-            GenericGameObject avatar = game.get("avatar");
-            if (avatar != null) {
-                avatar.getPosition().visit(dt, g, avatar, avatarControllerX);
-                avatar.getPosition().visit(dt, g, avatar, avatarControllerY);
+            if (avatarCreated) {
+                GenericGameObject avatar = game.get("avatar");
+                if (avatar != null) {
+                    avatar.getPosition().visit(dt, g, avatar, avatarControllerX);
+                    avatar.getPosition().visit(dt, g, avatar, avatarControllerY);
+                }
             }
         });
         input.init(jframe);
