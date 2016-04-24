@@ -1,5 +1,6 @@
 package com.zealouscoder.ld35;
 
+import java.awt.Image;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,15 +48,35 @@ public class Game extends Thread implements Renderable, GameConstants {
     private GameObjectBound                     bounds;
     private GameState                           currentState;
     private Object                              gcObject              = new Object();
+    private final MapLoader                     mapLoader;
+    private final GameRenderContext             renderContext;
+    private ImageResource                       wrap;
 
-    public Game(String name) {
+    public Game(String name, GameRenderContext context) {
         super(name);
+
+        this.renderContext = context;
+        this.mapLoader = new MapLoader(this);
         this.name = name;
         add((g, dt) -> {
-            if(g.every(2, gcObject)) {
+            if (g.every(2, gcObject)) {
                 System.gc();
             }
         });
+    }
+
+    public ImageResource loadImage(String id) {
+        return renderContext.loadImageResource(id);
+    }
+
+    public boolean loadMap(String mapFile) {
+        try {
+            mapLoader.loadMaps(mapFile);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void addEventHandler(String eventType, GameEventHandler handler) {
@@ -302,7 +323,10 @@ public class Game extends Thread implements Renderable, GameConstants {
 
     private boolean collides(Renderable nearby, GenericGameObject go, GamePosition update) {
         double radiusSq = go.getBounds().getRadiusSq() + nearby.getBounds().getRadiusSq();
-        return nearby.getPosition().distSq(update) <= radiusSq;
+        if (nearby.getPosition().distSq(update) <= radiusSq) {
+            return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(), go.getPosition());
+        }
+        return false;
     }
 
     public Renderable[] neighbors(GenericGameObject go, GamePosition update) {
@@ -350,5 +374,11 @@ public class Game extends Thread implements Renderable, GameConstants {
             bounds = new GameObjectBound(getView().getWidth(), getView().getHeight());
         }
         return bounds;
+    }
+
+    public ImageResource loadImageResource(String id, Image image) {
+        ImageResource res = ImageResource.wrap(id);
+        renderContext.loadImageResource(res, image);
+        return res;
     }
 }

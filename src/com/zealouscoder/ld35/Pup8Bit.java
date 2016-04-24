@@ -21,10 +21,9 @@ import com.zealouscoder.ld35.scriptextension.ScriptExtensionCoffee;
 
 public class Pup8Bit implements GameConstants {
 
-    private static final Game            game          = new Game(NAME);
     private static GameRenderContext     context       = GameRenderContext.wrap(null);
+    private static final Game            game          = new Game(NAME, context);
     private static boolean               avatarCreated = false;
-    private static final MapLoader       mapLoader     = new MapLoader("resources/puplevel1.tmx", context, game);
     private static final SwingRenderer   renderer      = new SwingRenderer();
     private static final ScriptExtension scripts       = new ScriptExtensionCoffee(game);
 
@@ -38,7 +37,6 @@ public class Pup8Bit implements GameConstants {
         game.start();
         GameComponent comp = new GameComponent(game, context, renderer);
         JFrame jframe = createWindow(comp);
-        mapLoader.load();
         game.add((g, dt) -> {
             if (g.every(FPS, comp)) {
                 game.addEvent(new GameEvent("repaint", new Properties()));
@@ -47,7 +45,11 @@ public class Pup8Bit implements GameConstants {
 
         CoordinateManipulator avatarControllerX = new CoordinateManipulator(true);
         CoordinateManipulator avatarControllerY = new CoordinateManipulator(false);
-
+        try {
+            scripts.runInitScript();
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        }
         // TODO: extract into script
         game.add((g, dt) -> {
             if (!avatarCreated) {
@@ -68,11 +70,6 @@ public class Pup8Bit implements GameConstants {
         });
         input.init(jframe);
         jframe.setVisible(true);
-        try {
-            scripts.runInitScript();
-        } catch (ScriptException e) {
-            e.printStackTrace();
-        }
     }
 
     private static GenericGameObject spawnPlayerAt(double x, double y) {
@@ -80,7 +77,9 @@ public class Pup8Bit implements GameConstants {
         BufferedImage img;
         try {
             img = ImageIO.read(stream);
-            Sprite sprite = new Sprite(context.loadImageResource("avatar", img), img.getWidth(), img.getHeight(),
+            Sprite sprite = new Sprite(
+                    game.loadImageResource("avatar", img), 
+                    img.getWidth()-1, img.getHeight()-1,
                     GamePosition.wrap(x, y, game.getMapViewLayer().forLayer(20)));
             Properties props = new Properties();
             props.put(GameObjectProps.DIRECTION.name(), 0d);

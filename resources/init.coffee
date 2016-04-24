@@ -1,4 +1,5 @@
 print 'Visit resources/init.coffee to modify me!'
+game.loadMap "resources/puplevel1.tmx"
 timer = 'timer'
 seconds = 0
 game.add (game, dt) ->

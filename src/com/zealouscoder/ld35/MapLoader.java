@@ -15,24 +15,20 @@ import tiled.io.TMXMapReader;
 
 public class MapLoader {
 
-    private String            mapFile;
-    private GameRenderContext context;
-    private Game              game;
+    private Game game;
 
-    public MapLoader(String map, GameRenderContext context, Game game) {
-        this.mapFile = map;
-        this.context = context;
+    public MapLoader(Game game) {
         this.game = game;
     }
 
-    private void loadMaps(String mapFile) throws Exception {
+    public void loadMaps(String mapFile) throws Exception {
         TMXMapReader reader = new TMXMapReader();
         tiled.core.Map readMap = reader.readMap(mapFile);
         Map<Integer, ImageResource> images = new HashMap<Integer, ImageResource>();
         readMap.getTileSets().forEach((tileset) -> {
             tileset.forEach((tile) -> {
                 if (!images.containsKey(tile.getId())) {
-                    images.put(tile.getId(), context.loadImageResource("tile" + tile.getId(), tile.getImage()));
+                    images.put(tile.getId(), game.loadImageResource("tile" + tile.getId(), tile.getImage()));
                 }
             });
         });
@@ -74,13 +70,5 @@ public class MapLoader {
                 }
             }
         });
-    }
-
-    public void load() {
-        try {
-            loadMaps(mapFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
