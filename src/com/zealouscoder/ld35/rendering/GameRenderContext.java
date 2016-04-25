@@ -1,6 +1,5 @@
 package com.zealouscoder.ld35.rendering;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -47,7 +46,6 @@ public class GameRenderContext {
 
     public void drawSprite(Sprite sprite) {
         toPosition(sprite);
-        g.setComposite(AlphaComposite.SrcOver);
         g.drawImage(images.get(sprite.getImage()), 0, 0, sprite.getWidth(), sprite.getHeight(), null);
     }
 
@@ -101,7 +99,6 @@ public class GameRenderContext {
         BufferedImage newImage = dc.createCompatibleImage(image.getWidth(null), image.getHeight(null),
                 Transparency.TRANSLUCENT);
         Graphics g = newImage.createGraphics();
-        g.clearRect(0, 0, newImage.getWidth(), newImage.getHeight());
         g.drawImage(image, 0, 0, null);
         g.dispose();
         return newImage;
