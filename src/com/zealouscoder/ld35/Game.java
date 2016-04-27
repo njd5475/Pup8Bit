@@ -302,8 +302,10 @@ public class Game extends Thread implements Renderable, GameConstants {
 
     public boolean isValid(GenericGameObject go, GamePosition update) {
         for (Renderable nearby : neighbors(go, update)) {
-            if (!isPassable(nearby) && collides(nearby, go, update)) {
-                return false;
+            if (!isPassable(nearby)) {
+                if (collides(nearby, go, update)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -323,7 +325,8 @@ public class Game extends Thread implements Renderable, GameConstants {
 
     private boolean collides(Renderable nearby, GenericGameObject go, GamePosition update) {
         double radiusSq = go.getBounds().getRadiusSq() + nearby.getBounds().getRadiusSq();
-        if (nearby.getPosition().distSq(update) <= radiusSq) {
+        double nearbySq = nearby.getPosition().distSq(update);
+        if (nearbySq <= radiusSq + 0.2) {
             return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(), go.getPosition());
         }
         return false;
@@ -333,7 +336,7 @@ public class Game extends Thread implements Renderable, GameConstants {
         Set<Renderable> nearbys = new HashSet<Renderable>();
         for (Set<Renderable> rSet : byLayer.values()) {
             for (Renderable r : rSet) {
-                if (isClose(r, update) && r != go) {
+                if (isClose(r, go.getPosition()) && r != go) {
                     nearbys.add(r);
                 }
             }
