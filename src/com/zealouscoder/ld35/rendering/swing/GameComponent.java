@@ -19,9 +19,6 @@ public class GameComponent extends JComponent implements GameConstants {
 
 	private BufferedImage			bkBuff	= new BufferedImage(GAME_WIDTH, GAME_HEIGHT,
 			BufferedImage.TYPE_INT_ARGB);
-	private Game							game;
-	private GameRenderContext	context;
-	private GameRenderer			renderer;
 	private Object						drawing	= new Object();
 
 	{
@@ -31,9 +28,6 @@ public class GameComponent extends JComponent implements GameConstants {
 
 	public GameComponent(Game game, GameRenderContext context,
 			GameRenderer renderer) {
-		this.game = game;
-		this.context = context;
-		this.renderer = renderer;
 		game.addEventHandler("repaint", (g, event) -> {
 			synchronized (drawing) {
 				// clear and draw the backbuffer

@@ -26,362 +26,379 @@ import com.zealouscoder.ld35.rendering.Updater;
 
 public class Game extends Thread implements Renderable, GameConstants {
 
-    private boolean                             isGameRunning         = true;
-    private double                              gameClock             = 0;
-    private double                              accumulator;
-    private double                              lastNano              = -1;
-    private Set<Updater>                        updaters              = new HashSet<Updater>();
-    private String                              name;
-    private ConcurrentLinkedQueue<Updater>      updaterAddQueue       = new ConcurrentLinkedQueue<Updater>();
-    private ConcurrentLinkedQueue<Updater>      updaterRemoveQueue    = new ConcurrentLinkedQueue<Updater>();
-    private Map<Object, Double>                 timers                = new HashMap<Object, Double>();
-    private GamePosition                        anchor                = GamePosition.ANCHOR;
-    private SortedMap<Integer, Set<Renderable>> byLayer               = new TreeMap<Integer, Set<Renderable>>();
-    private ConcurrentLinkedQueue<Renderable>   renderableAddQueue    = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Renderable>   renderableRemoveQueue = new ConcurrentLinkedQueue<>();
-    private GameView                            mapViewLayer;
-    private ConcurrentLinkedQueue<GameEvent>    eventQueue            = new ConcurrentLinkedQueue<GameEvent>();
-    private Map<String, Set<GameEventHandler>>  eventHandlers         = new HashMap<String, Set<GameEventHandler>>();
-    private Map<String, GenericGameObject>      namedObjects          = Collections
-            .synchronizedMap(new HashMap<String, GenericGameObject>());
-    private Map<String, Set<GenericGameObject>> byTypeObjects         = new HashMap<String, Set<GenericGameObject>>();
-    private GameObjectBound                     bounds;
-    private GameState                           currentState;
-    private Object                              gcObject              = new Object();
-    private final MapLoader                     mapLoader;
-    private final GameRenderContext             renderContext;
-    private ImageResource                       wrap;
+	private boolean															isGameRunning					= true;
+	private double															gameClock							= 0;
+	private double															accumulator;
+	private double															lastNano							= -1;
+	private Set<Updater>												updaters							= new HashSet<Updater>();
+	private String															name;
+	private ConcurrentLinkedQueue<Updater>			updaterAddQueue				= new ConcurrentLinkedQueue<Updater>();
+	private ConcurrentLinkedQueue<Updater>			updaterRemoveQueue		= new ConcurrentLinkedQueue<Updater>();
+	private Map<Object, Double>									timers								= new HashMap<Object, Double>();
+	private GamePosition												anchor								= GamePosition.ANCHOR;
+	private SortedMap<Integer, Set<Renderable>>	byLayer								= new TreeMap<Integer, Set<Renderable>>();
+	private ConcurrentLinkedQueue<Renderable>		renderableAddQueue		= new ConcurrentLinkedQueue<>();
+	private ConcurrentLinkedQueue<Renderable>		renderableRemoveQueue	= new ConcurrentLinkedQueue<>();
+	private GameView														mapViewLayer;
+	private ConcurrentLinkedQueue<GameEvent>		eventQueue						= new ConcurrentLinkedQueue<GameEvent>();
+	private Map<String, Set<GameEventHandler>>	eventHandlers					= new HashMap<String, Set<GameEventHandler>>();
+	private Map<String, GenericGameObject>			namedObjects					= Collections
+			.synchronizedMap(new HashMap<String, GenericGameObject>());
+	private Map<String, Set<GenericGameObject>>	byTypeObjects					= new HashMap<String, Set<GenericGameObject>>();
+	private GameObjectBound											bounds;
+	private GameState														currentState;
+	private Object															gcObject							= new Object();
+	private final MapLoader											mapLoader;
+	private final GameRenderContext							renderContext;
+	private GameRenderer												renderer;
+	private ImageResource												wrap;
 
-    public Game(String name, GameRenderContext context) {
-        super(name);
+	public Game(String name, GameRenderContext context, GameRenderer renderer) {
+		super(name);
 
-        this.renderContext = context;
-        this.mapLoader = new MapLoader(this);
-        this.name = name;
-        add((g, dt) -> {
-            if (g.every(2, gcObject)) {
-                System.gc();
-            }
-        });
-    }
+		this.renderer = renderer;
+		this.renderContext = context;
+		this.mapLoader = new MapLoader(this);
+		this.name = name;
+		add((g, dt) -> {
+			if (g.every(2, gcObject)) {
+				System.gc();
+			}
+		});
+	}
+	
+	public void createWindow() {
+		this.getRenderer().createWindow(renderContext, getName(), this);
+	}
 
-    public ImageResource loadImage(String id) {
-        return renderContext.loadImageResource(id);
-    }
+	public void set(GameRenderer renderer) {
+		this.renderer = renderer;
+	}
+	
+	public GameRenderer getRenderer() {
+		return this.renderer;
+	}
 
-    public boolean loadMap(String mapFile) {
-        try {
-            mapLoader.loadMaps(mapFile);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+	public ImageResource loadImage(String id) {
+		return renderContext.loadImageResource(id);
+	}
 
-    public void addEventHandler(String eventType, GameEventHandler handler) {
-        Set<GameEventHandler> handlers = eventHandlers.get(eventType);
-        if (handlers == null) {
-            handlers = new HashSet<GameEventHandler>();
-            eventHandlers.put(eventType, handlers);
-        }
-        handlers.add(handler);
-    }
+	public boolean loadMap(String mapFile) {
+		try {
+			mapLoader.loadMaps(mapFile);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-    public GenericGameObject[] byType(String type) {
-        Set<GenericGameObject> set = byTypeObjects.get(type);
-        return set.toArray(new GenericGameObject[set.size()]);
-    }
+	public void addEventHandler(String eventType, GameEventHandler handler) {
+		Set<GameEventHandler> handlers = eventHandlers.get(eventType);
+		if (handlers == null) {
+			handlers = new HashSet<GameEventHandler>();
+			eventHandlers.put(eventType, handlers);
+		}
+		handlers.add(handler);
+	}
 
-    public GenericGameObject get(String key) {
-        return namedObjects.get(key);
-    }
+	public GenericGameObject[] byType(String type) {
+		Set<GenericGameObject> set = byTypeObjects.get(type);
+		return set.toArray(new GenericGameObject[set.size()]);
+	}
 
-    public String getGameName() {
-        return name;
-    }
+	public GenericGameObject get(String key) {
+		return namedObjects.get(key);
+	}
 
-    public double getGameClock() {
-        return gameClock;
-    }
+	public String getGameName() {
+		return name;
+	}
 
-    public void add(Updater updater) {
-        updaterAddQueue.add(updater);
-    }
+	public double getGameClock() {
+		return gameClock;
+	}
 
-    public void remove(Updater updater) {
-        updaterRemoveQueue.add(updater);
-    }
+	public void add(Updater updater) {
+		updaterAddQueue.add(updater);
+	}
 
-    public void add(Renderable renderable) {
-        renderableAddQueue.add(renderable);
-    }
+	public void remove(Updater updater) {
+		updaterRemoveQueue.add(updater);
+	}
 
-    public void remove(Renderable renderable) {
-        renderableRemoveQueue.add(renderable);
-    }
+	public void add(Renderable renderable) {
+		renderableAddQueue.add(renderable);
+	}
 
-    public void addEvent(GameEvent event) {
-        eventQueue.add(event);
-    }
+	public void remove(Renderable renderable) {
+		renderableRemoveQueue.add(renderable);
+	}
 
-    public void render(GameRenderContext rc, GameRenderer renderer) {
-        render(rc, this, renderer);
-    }
+	public void addEvent(GameEvent event) {
+		eventQueue.add(event);
+	}
 
-    @Override
-    public void render(GameRenderContext rc, Game game, GameRenderer renderer) {
-        renderer.render(rc, game);
-    }
+	public void render(GameRenderContext rc, GameRenderer renderer) {
+		render(rc, this, renderer);
+	}
 
-    @Override
-    public void run() {
-        while (isGameRunning) {
+	@Override
+	public void render(GameRenderContext rc, Game game, GameRenderer renderer) {
+		renderer.render(rc, game);
+	}
 
-            double nano = System.nanoTime();
-            if (lastNano <= 0) {
-                lastNano = nano;
-            }
+	@Override
+	public void run() {
+		while (isGameRunning) {
 
-            double dt = (nano - lastNano) * NS_TO_SECONDS;
+			double nano = System.nanoTime();
+			if (lastNano <= 0) {
+				lastNano = nano;
+			}
 
-            lastNano = nano;
+			double dt = (nano - lastNano) * NS_TO_SECONDS;
 
-            accumulator += dt;
+			lastNano = nano;
 
-            // decrement fixed time step from accumulator
-            while (accumulator >= UPDATE_INTERVAL) {
-                accumulator -= UPDATE_INTERVAL;
-                update(UPDATE_INTERVAL);
-                emptyQueues();
-            }
-        }
-        System.exit(0);
-    }
+			accumulator += dt;
 
-    private void update(double dt) {
-        gameClock += dt;
-        if (!eventQueue.isEmpty()) {
-            consume(eventQueue, (event) -> {
-                Set<GameEventHandler> handlers = eventHandlers.get(event.getType());
-                if (handlers != null) {
-                    for (GameEventHandler handler : handlers) {
-                        handler.handle(Game.this, event);
-                    }
-                }
-            });
-        }
-        for (Updater updater : updaters) {
-            updater.update(this, dt);
-        }
-    }
+			// decrement fixed time step from accumulator
+			while (accumulator >= UPDATE_INTERVAL) {
+				accumulator -= UPDATE_INTERVAL;
+				update(UPDATE_INTERVAL);
+				emptyQueues();
+			}
+		}
+		System.exit(0);
+	}
 
-    private void emptyQueues() {
-        // empty waiting queue
-        if (!updaterAddQueue.isEmpty()) {
-            consume(updaterAddQueue, (upd) -> {
-                addUpdater(upd);
-            });
-        }
-        if (!updaterRemoveQueue.isEmpty()) {
-            consume(updaterRemoveQueue, (upd) -> {
-                removeUpdater(upd);
-            });
-        }
-        if (!renderableAddQueue.isEmpty()) {
-            consume(renderableAddQueue, (r) -> {
-                addRenderable(r);
+	private void update(double dt) {
+		gameClock += dt;
+		if (!eventQueue.isEmpty()) {
+			consume(eventQueue, (event) -> {
+				Set<GameEventHandler> handlers = eventHandlers.get(event.getType());
+				if (handlers != null) {
+					for (GameEventHandler handler : handlers) {
+						handler.handle(Game.this, event);
+					}
+				}
+			});
+		}
+		for (Updater updater : updaters) {
+			updater.update(this, dt);
+		}
+	}
 
-            });
-        }
-        if (!renderableRemoveQueue.isEmpty()) {
-            consume(renderableRemoveQueue, (r) -> {
-                removeRenderable(r);
-            });
-        }
-    }
+	private void emptyQueues() {
+		// empty waiting queue
+		if (!updaterAddQueue.isEmpty()) {
+			consume(updaterAddQueue, (upd) -> {
+				addUpdater(upd);
+			});
+		}
+		if (!updaterRemoveQueue.isEmpty()) {
+			consume(updaterRemoveQueue, (upd) -> {
+				removeUpdater(upd);
+			});
+		}
+		if (!renderableAddQueue.isEmpty()) {
+			consume(renderableAddQueue, (r) -> {
+				addRenderable(r);
 
-    private void addUpdater(Updater updater) {
-        updaters.add(updater);
-    }
+			});
+		}
+		if (!renderableRemoveQueue.isEmpty()) {
+			consume(renderableRemoveQueue, (r) -> {
+				removeRenderable(r);
+			});
+		}
+	}
 
-    private void removeUpdater(Updater updater) {
-        updaters.remove(updater);
-    }
+	private void addUpdater(Updater updater) {
+		updaters.add(updater);
+	}
 
-    private void addRenderable(Renderable r) {
-        if (r.isRenderable()) {
-            Set<Renderable> layer = byLayer.get(r.getLayer());
-            if (layer == null) {
-                layer = new HashSet<Renderable>();
-                byLayer.put(r.getLayer(), layer);
-            }
-            layer.add(r);
-        }
-        if (r instanceof GenericGameObject) {
-            GenericGameObject go = (GenericGameObject) r;
-            namedObjects.put(go.getId(), go);
-            addTypeObject(go);
-        }
-    }
+	private void removeUpdater(Updater updater) {
+		updaters.remove(updater);
+	}
 
-    private void addTypeObject(GenericGameObject go) {
-        Set<GenericGameObject> objs = byTypeObjects.get(go.getType());
-        if (objs == null) {
-            objs = new HashSet<GenericGameObject>();
-            byTypeObjects.put(go.getType(), objs);
-        }
-        objs.add(go);
-    }
+	private void addRenderable(Renderable r) {
+		if (r.isRenderable()) {
+			Set<Renderable> layer = byLayer.get(r.getLayer());
+			if (layer == null) {
+				layer = new HashSet<Renderable>();
+				byLayer.put(r.getLayer(), layer);
+			}
+			layer.add(r);
+		}
+		if (r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			namedObjects.put(go.getId(), go);
+			addTypeObject(go);
+		}
+	}
 
-    private void removeRenderable(Renderable r) {
-        Set<Renderable> layer = byLayer.get(r.getLayer());
-        if (layer != null) {
-            layer.remove(r);
-            if (layer.isEmpty()) {
-                byLayer.remove(r.getLayer());
-            }
-        }
-        if (r instanceof GenericGameObject) {
-            GenericGameObject go = (GenericGameObject) r;
-            namedObjects.remove(go.getId());
-        }
-    }
+	private void addTypeObject(GenericGameObject go) {
+		Set<GenericGameObject> objs = byTypeObjects.get(go.getType());
+		if (objs == null) {
+			objs = new HashSet<GenericGameObject>();
+			byTypeObjects.put(go.getType(), objs);
+		}
+		objs.add(go);
+	}
 
-    private <T> void consume(Queue<T> queue, Consumer<T> consumer) {
-        while (!queue.isEmpty()) {
-            T poll = queue.remove();
-            consumer.accept(poll);
-        }
-    }
+	private void removeRenderable(Renderable r) {
+		Set<Renderable> layer = byLayer.get(r.getLayer());
+		if (layer != null) {
+			layer.remove(r);
+			if (layer.isEmpty()) {
+				byLayer.remove(r.getLayer());
+			}
+		}
+		if (r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			namedObjects.remove(go.getId());
+		}
+	}
 
-    public boolean every(double d, Object anyObj) {
-        Double next = timers.get(anyObj);
-        if (next == null) {
-            next = gameClock + d;
-            timers.put(anyObj, next);
-        }
+	private <T> void consume(Queue<T> queue, Consumer<T> consumer) {
+		while (!queue.isEmpty()) {
+			T poll = queue.remove();
+			consumer.accept(poll);
+		}
+	}
 
-        if (gameClock >= next) {
-            timers.put(anyObj, gameClock + d);
-            return true;
-        }
+	public boolean every(double d, Object anyObj) {
+		Double next = timers.get(anyObj);
+		if (next == null) {
+			next = gameClock + d;
+			timers.put(anyObj, next);
+		}
 
-        return false;
-    }
+		if (gameClock >= next) {
+			timers.put(anyObj, gameClock + d);
+			return true;
+		}
 
-    @Override
-    public GamePosition getPosition() {
-        return anchor;
-    }
+		return false;
+	}
 
-    public Set<Entry<Integer, Set<Renderable>>> getRenderables() {
-        return byLayer.entrySet();
-    }
+	@Override
+	public GamePosition getPosition() {
+		return anchor;
+	}
 
-    @Override
-    public int getLayer() {
-        return 0;
-    }
+	public Set<Entry<Integer, Set<Renderable>>> getRenderables() {
+		return byLayer.entrySet();
+	}
 
-    @Override
-    public GameView getView() {
-        return anchor.getView();
-    }
+	@Override
+	public int getLayer() {
+		return 0;
+	}
 
-    public void quit() {
-        isGameRunning = false;
-    }
+	@Override
+	public GameView getView() {
+		return anchor.getView();
+	}
 
-    public GameView getMapViewLayer() {
-        if (mapViewLayer == null) {
-            mapViewLayer = getView().scale(5, 5);
-        }
-        return mapViewLayer;
-    }
+	public void quit() {
+		isGameRunning = false;
+	}
 
-    public boolean isValid(GenericGameObject go, GamePosition update) {
-        for (Renderable nearby : neighbors(go, update)) {
-            if (!isPassable(nearby)) {
-                if (collides(nearby, go, update)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+	public GameView getMapViewLayer() {
+		if (mapViewLayer == null) {
+			mapViewLayer = getView().scale(5, 5);
+		}
+		return mapViewLayer;
+	}
 
-    private boolean isPassable(Renderable nearby) {
-        if (nearby instanceof GenericGameObject) {
-            GenericGameObject go = (GenericGameObject) nearby;
-            if (go.getProperties().containsKey("passable")) {
-                return go.check("passable");
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
+	public boolean isValid(GenericGameObject go, GamePosition update) {
+		for (Renderable nearby : neighbors(go, update)) {
+			if (!isPassable(nearby)) {
+				if (collides(nearby, go, update)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-    private boolean collides(Renderable nearby, GenericGameObject go, GamePosition update) {
-        double radiusSq = go.getBounds().getRadiusSq() + nearby.getBounds().getRadiusSq();
-        double nearbySq = nearby.getPosition().distSq(update);
-        if (nearbySq <= radiusSq + 0.2) {
-            return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(), go.getPosition());
-        }
-        return false;
-    }
+	private boolean isPassable(Renderable nearby) {
+		if (nearby instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) nearby;
+			if (go.getProperties().containsKey("passable")) {
+				return go.check("passable");
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public Renderable[] neighbors(GenericGameObject go, GamePosition update) {
-        Set<Renderable> nearbys = new HashSet<Renderable>();
-        for (Set<Renderable> rSet : byLayer.values()) {
-            for (Renderable r : rSet) {
-                if (isClose(r, go.getPosition()) && r != go) {
-                    nearbys.add(r);
-                }
-            }
-        }
-        return nearbys.toArray(new Renderable[nearbys.size()]);
-    }
+	private boolean collides(Renderable nearby, GenericGameObject go,
+			GamePosition update) {
+		double radiusSq = go.getBounds().getRadiusSq()
+				+ nearby.getBounds().getRadiusSq();
+		double nearbySq = nearby.getPosition().distSq(update);
+		if (nearbySq <= radiusSq + 0.2) {
+			return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(),
+					go.getPosition());
+		}
+		return false;
+	}
 
-    private boolean isClose(Renderable r, GamePosition update) {
-        return update.isClose(r);
-    }
+	public Renderable[] neighbors(GenericGameObject go, GamePosition update) {
+		Set<Renderable> nearbys = new HashSet<Renderable>();
+		for (Set<Renderable> rSet : byLayer.values()) {
+			for (Renderable r : rSet) {
+				if (isClose(r, go.getPosition()) && r != go) {
+					nearbys.add(r);
+				}
+			}
+		}
+		return nearbys.toArray(new Renderable[nearbys.size()]);
+	}
 
-    public void dispatchKeyEvent(int keyCode, String action) {
-        Properties props = new Properties();
-        props.put("keycode", keyCode);
-        props.put("action", action);
-        addEvent(new GameEvent("KeyEvent", props));
-    }
+	private boolean isClose(Renderable r, GamePosition update) {
+		return update.isClose(r);
+	}
 
-    @Override
-    public boolean isRenderable() {
-        return this.getView() != null;
-    }
+	public void dispatchKeyEvent(int keyCode, String action) {
+		Properties props = new Properties();
+		props.put("keycode", keyCode);
+		props.put("action", action);
+		addEvent(new GameEvent("KeyEvent", props));
+	}
 
-    public GenericGameObject getFirst(String propKey, String propVal) {
-        GenericGameObject ret = null;
-        for (Map.Entry<String, GenericGameObject> entry : namedObjects.entrySet()) {
-            if (propVal.equals(entry.getValue().get(propKey))) {
-                ret = entry.getValue();
-                break;
-            }
-        }
-        return ret;
-    }
+	@Override
+	public boolean isRenderable() {
+		return this.getView() != null;
+	}
 
-    @Override
-    public GameObjectBound getBounds() {
-        if (bounds == null) {
-            bounds = new GameObjectBound(getView().getWidth(), getView().getHeight());
-        }
-        return bounds;
-    }
+	public GenericGameObject getFirst(String propKey, String propVal) {
+		GenericGameObject ret = null;
+		for (Map.Entry<String, GenericGameObject> entry : namedObjects.entrySet()) {
+			if (propVal.equals(entry.getValue().get(propKey))) {
+				ret = entry.getValue();
+				break;
+			}
+		}
+		return ret;
+	}
 
-    public ImageResource loadImageResource(String id, Image image) {
-        ImageResource res = ImageResource.wrap(id);
-        renderContext.loadImageResource(res, image);
-        return res;
-    }
+	@Override
+	public GameObjectBound getBounds() {
+		if (bounds == null) {
+			bounds = new GameObjectBound(getView().getWidth(), getView().getHeight());
+		}
+		return bounds;
+	}
+
+	public ImageResource loadImageResource(String id, Image image) {
+		ImageResource res = ImageResource.wrap(id);
+		renderContext.loadImageResource(res, image);
+		return res;
+	}
 }
