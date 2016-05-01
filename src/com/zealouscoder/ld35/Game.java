@@ -66,7 +66,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 			}
 		});
 	}
-	
+
 	public void createWindow() {
 		this.getRenderer().createWindow(renderContext, getName(), this);
 	}
@@ -74,7 +74,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 	public void set(GameRenderer renderer) {
 		this.renderer = renderer;
 	}
-	
+
 	public GameRenderer getRenderer() {
 		return this.renderer;
 	}
@@ -85,7 +85,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 
 	public boolean loadMap(String mapFile) {
 		try {
-			mapLoader.loadMaps(mapFile);
+			mapLoader.loadMap(mapFile);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -342,7 +342,7 @@ public class Game extends Thread implements Renderable, GameConstants {
 		double radiusSq = go.getBounds().getRadiusSq()
 				+ nearby.getBounds().getRadiusSq();
 		double nearbySq = nearby.getPosition().distSq(update);
-		if (nearbySq <= radiusSq + 0.2) {
+		if (nearbySq <= radiusSq) {
 			return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(),
 					go.getPosition());
 		}

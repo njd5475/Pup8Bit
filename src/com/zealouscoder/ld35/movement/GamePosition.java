@@ -29,7 +29,6 @@ public class GamePosition {
         double ny = update.getY();
         GamePosition newPos = GamePosition.wrap(nx, ny, view);
         if (game.isValid(go, newPos)) {
-            System.out.println("Updated to " + nx + " and " + ny + " valid " + game.isValid(go, GamePosition.wrap(nx, ny, view)));
             this.x = nx;
             this.y = ny;
         }

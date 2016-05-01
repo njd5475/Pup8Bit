@@ -52,8 +52,9 @@ public class Pup8Bit implements GameConstants {
 			if (avatarCreated) {
 				GenericGameObject avatar = game.get("avatar");
 				if (avatar != null) {
-					avatar.getPosition().visit(dt, g, avatar, avatarControllerX);
-					avatar.getPosition().visit(dt, g, avatar, avatarControllerY);
+					GamePosition p = avatar.getPosition();
+					p.visit(dt, g, avatar, avatarControllerX);
+					p.visit(dt, g, avatar, avatarControllerY);
 				}
 			}
 		});

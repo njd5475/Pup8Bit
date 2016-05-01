@@ -15,8 +15,7 @@ May add a custom editor project later to support better integration.
 
 In script files inside the state init method
 
-	init ->
-		loadMap 'resources/puplevel1.tmx'
+	loadMap 'resources/puplevel1.tmx'
 
 ## Loading Images
 
