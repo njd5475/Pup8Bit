@@ -53,6 +53,7 @@ opportunity to add a behavior tree builder to that library.
 ## Todo
 
 * Move all custom game code into script
+* Add game state system
 * Add asset management system
 
 ## Contributions Welcome
