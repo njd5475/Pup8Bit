@@ -30,12 +30,16 @@ public class GameObjectBound {
         return inside(thisPos, otherPos.getX(), otherPos.getY())
                 || inside(thisPos, otherPos.getX() + bounds.width, otherPos.getY())
                 || inside(thisPos, otherPos.getX() + bounds.width, otherPos.getY() + bounds.height)
-                || inside(thisPos, otherPos.getX(), otherPos.getY() + bounds.height);
+                || inside(thisPos, otherPos.getX(), otherPos.getY() + bounds.height)
+                || bounds.inside(otherPos, thisPos.getX(), thisPos.getY())
+                || bounds.inside(otherPos, thisPos.getX()+getWidth(), thisPos.getY())
+                || bounds.inside(otherPos, thisPos.getX(), thisPos.getY()+getHeight())
+                || bounds.inside(otherPos, thisPos.getX()+getWidth(), thisPos.getY()+getHeight());
     }
 
     public boolean inside(GamePosition thisPos, double x, double y) {
-        return (x <= thisPos.getX() + width && x >= thisPos.getX())
-                && (y <= thisPos.getY() + height && y >= thisPos.getY());
+        return (x <= thisPos.getX() + getWidth() && x >= thisPos.getX())
+                && (y <= thisPos.getY() + getHeight() && y >= thisPos.getY());
     }
 
 }

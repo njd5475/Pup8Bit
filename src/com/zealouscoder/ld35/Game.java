@@ -339,14 +339,8 @@ public class Game extends Thread implements Renderable, GameConstants {
 
 	private boolean collides(Renderable nearby, GenericGameObject go,
 			GamePosition update) {
-		double radiusSq = go.getBounds().getRadiusSq()
-				+ nearby.getBounds().getRadiusSq();
-		double nearbySq = nearby.getPosition().distSq(update);
-		if (nearbySq <= radiusSq) {
 			return nearby.getBounds().collides(nearby.getPosition(), go.getBounds(),
-					go.getPosition());
-		}
-		return false;
+					update);
 	}
 
 	public Renderable[] neighbors(GenericGameObject go, GamePosition update) {
