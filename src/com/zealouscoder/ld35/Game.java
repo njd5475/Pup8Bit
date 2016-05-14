@@ -167,6 +167,9 @@ public class Game extends Thread implements Renderable, GameConstants {
 			while (accumulator >= UPDATE_INTERVAL) {
 				accumulator -= UPDATE_INTERVAL;
 				update(UPDATE_INTERVAL);
+				if(!isGameRunning) {
+					break;
+				}
 				emptyQueues();
 			}
 		}

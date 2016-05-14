@@ -18,10 +18,11 @@ game.addEventHandler 'KeyEvent', (game, event) ->
   keyCode = event.getProps().keycode
   action = event.getProps().action
   
-  if keyCode == K.VK_ESCAPE and 'released' == action
+  
+  keyStates[keyCode] = action
+  
+  if keyStates[K.VK_ESCAPE] == 'released'
     game.quit()
-  else
-    keyStates[keyCode] = action
     
   x = 0
   y = 0

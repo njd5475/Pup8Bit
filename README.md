@@ -59,8 +59,7 @@ opportunity to add a behavior tree builder to that library.
 ## Contributions Welcome
 
 Find a bug fix it open pull request against offending branch and submit for 
-review. Tests first also appreciated. If you want to reproduce the bug using
-a failing test that is probably the best way. I might even only accept that as
-as pull request in the future. Right now there are no tests but hope to get unit
-testing built with mockito and junit after adding gradle. First things first 
-get the basics working.
+review. Submitting failing tests first is also appreciated. In the future I 
+might only accept a failing test in a pull request. Right now there are only a 
+few tests but hope to add more with mockito after adding gradle. First things 
+first get the basics working.
