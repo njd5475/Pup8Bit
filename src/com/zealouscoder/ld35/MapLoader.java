@@ -15,25 +15,21 @@ import tiled.io.TMXMapReader;
 
 public class MapLoader {
 
-	private String						mapFile;
-	private GameRenderContext	context;
-	private Game							game;
+	private Game game;
 
-	public MapLoader(String map, GameRenderContext context, Game game) {
-		this.mapFile = map;
-		this.context = context;
+	public MapLoader(Game game) {
 		this.game = game;
 	}
 
-	private void loadMaps(String mapFile) throws Exception {
+	public void loadMap(String mapFile) throws Exception {
 		TMXMapReader reader = new TMXMapReader();
 		tiled.core.Map readMap = reader.readMap(mapFile);
 		Map<Integer, ImageResource> images = new HashMap<Integer, ImageResource>();
 		readMap.getTileSets().forEach((tileset) -> {
 			tileset.forEach((tile) -> {
 				if (!images.containsKey(tile.getId())) {
-					images.put(tile.getId(), context
-							.loadImageResource("tile" + tile.getId(), tile.getImage()));
+					images.put(tile.getId(),
+							game.loadImageResource("tile" + tile.getId(), tile.getImage()));
 				}
 			});
 		});
@@ -41,7 +37,6 @@ public class MapLoader {
 		int layerCount = 0;
 		readMap.getLayers().forEach((layer) -> {
 			if (layer instanceof ObjectGroup) {
-				System.out.println("Found object group layer");
 				ObjectGroup objs = (ObjectGroup) layer;
 				objs.forEach((obj) -> {
 					Properties objProps = obj.getProperties();
@@ -51,10 +46,8 @@ public class MapLoader {
 							"obj" + obj.getX() + ":" + obj.getY(), obj.getType(), null,
 							objProps);
 					game.add(go);
-					System.out.println(obj.getType());
 				});
 			} else if (layer instanceof TileLayer) {
-				System.out.println("Found tile layer group");
 				TileLayer tL = (TileLayer) layer;
 				int w = tL.getWidth();
 				int h = tL.getHeight();
@@ -72,8 +65,6 @@ public class MapLoader {
 							Sprite sprite = new Sprite(images.get(t.getId()), t.getWidth(),
 									t.getHeight(), GamePosition.wrap(x * t.getWidth(),
 											y * t.getHeight(), layerView));
-							System.out.format("Tile at %d,%d with size %d,%d\n", x, y,
-									t.getWidth(), t.getHeight());
 							GenericGameObject go = new GenericGameObject("tile" + x + ":" + y,
 									"tile" + t.getId(), sprite, t.getProperties());
 							game.add(go);
@@ -82,13 +73,5 @@ public class MapLoader {
 				}
 			}
 		});
-	}
-
-	public void load() {
-		try {
-			loadMaps(mapFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }

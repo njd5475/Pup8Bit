@@ -44,7 +44,7 @@
    <property name="layer" value="1"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt0zkKACAMBMAUHv//sY2F+IEEnWJg0y0s6RHRt3Zk8tkj3zjM6x4F+v3Mf9RiDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAlC2jBw1Y=
+   eJzt1DEKwDAMA0APdfv/HzdLaIZMXWzIDYdXgZAzIhL47WqQAX10cg/Pcqvz8O1i9jJV5zqVP9WLPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgJ0X62XDVw==
   </data>
  </layer>
  <layer name="Tile Layer 2" width="100" height="100">
@@ -52,7 +52,7 @@
    <property name="layer" value="2"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt1bEKQCEIBVCXoP7/h1sKHvFcGnI5BwR1vA6OiBir4tPvmbfO3Huyp5Z71Dhzb8meN7Lc3aPG3x/3zwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODOBCA6ALk=
+   eJzt1aEOACAIBUCj/v8PO5tzECxiuNsIEN8LtAbcGttEO2+duffkTi191JD7X7I+9FQj+uP+OQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsEyzrQCr
   </data>
  </layer>
  <objectgroup name="Spawn Points">

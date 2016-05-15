@@ -6,6 +6,8 @@ import com.zealouscoder.ld35.Sprite;
 
 public abstract class GameRenderer {
 
+	public abstract void createWindow(GameRenderContext rc, String title, Game game);
+	
 	public abstract void render(GameRenderContext rc, Game game);
 
 	public abstract void render(GameRenderContext rc, Game game, Sprite sprite);
