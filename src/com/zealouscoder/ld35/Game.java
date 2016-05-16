@@ -34,7 +34,6 @@ public class Game extends Thread implements Renderable, GameConstants {
     private GamePosition            anchor        = GamePosition.ANCHOR;
     private GameObjectBound         bounds;
     private GameState               currentState;
-    private Object                  gcObject      = new Object();
     private final MapLoader         mapLoader;
     private final GameRenderContext renderContext;
     private GameRenderer            renderer;
@@ -50,11 +49,6 @@ public class Game extends Thread implements Renderable, GameConstants {
         this.renderContext = context;
         this.mapLoader = new MapLoader(this);
         this.name = name;
-        add((g, dt) -> {
-            if (g.every(2, gcObject)) {
-                System.gc();
-            }
-        });
     }
 
     public void createWindow() {
