@@ -51,7 +51,7 @@ public class Game extends Thread implements Renderable, GameConstants {
         this.mapLoader = new MapLoader(this);
         this.name = name;
         add((g, dt) -> {
-            if (g.every(2, gcObject)) {
+            if (g.every(1, gcObject)) {
                 System.gc();
             }
         });
