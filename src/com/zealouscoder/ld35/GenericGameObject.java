@@ -34,6 +34,10 @@ public class GenericGameObject implements Renderable {
 	public String getType() {
 		return type;
 	}
+	
+	public boolean hasSprite() {
+		return sprite != null;
+	}
 
 	public Sprite getSprite() {
 		return sprite;
