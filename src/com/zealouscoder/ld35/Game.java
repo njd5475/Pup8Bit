@@ -270,4 +270,14 @@ public class Game extends Thread implements Renderable, GameConstants {
         states.put(name, state = new GameState(this));
         return state;
     }
+
+		public Renderable[] get(GamePosition pos, GameObjectBound bounds) {
+			return currentState.get(pos, bounds);
+		}
+
+		@Override
+		public int compareTo(Renderable o) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 }

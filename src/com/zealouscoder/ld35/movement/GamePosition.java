@@ -5,7 +5,7 @@ import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.rendering.GameView;
 import com.zealouscoder.ld35.rendering.Renderable;
 
-public class GamePosition {
+public class GamePosition implements Comparable<GamePosition> {
 
     public static final GamePosition ANCHOR = wrap(0, 0, GameView.ANCHOR);
     private volatile double          x      = 0;
@@ -73,4 +73,17 @@ public class GamePosition {
         double dy = (getY() - update.getY());
         return dx * dx + dy * dy;
     }
+
+		@Override
+		public int compareTo(GamePosition o) {
+			double yDiff = getY() - o.getY();
+			if(yDiff == 0) {
+				double xDiff = getX() - o.getX();
+				if(xDiff == 0) {
+					return 0;
+				}
+				return (int) xDiff;
+			}
+			return (int) yDiff;
+		}
 }

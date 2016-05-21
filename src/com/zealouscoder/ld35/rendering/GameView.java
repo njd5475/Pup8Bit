@@ -16,7 +16,7 @@ public class GameView implements GameConstants {
 	private double								width;
 	private double								height;
 	private int										layer;
-    private AffineTransform transform;
+	private AffineTransform				transform;
 
 	protected GameView(double startx, double starty, double scaleX, double scaleY,
 			double rot, double width, double height, int layer) {
@@ -29,18 +29,18 @@ public class GameView implements GameConstants {
 		this.height = height;
 		this.layer = layer;
 	}
-	
+
 	public AffineTransform getTransform() {
-	    if(transform == null) {
-    		transform = new AffineTransform();
-    		transform.scale(scaleX, scaleY);
-    		transform.rotate(rot);
-    		transform.translate(startx, starty);
-	    }
+		if (transform == null) {
+			transform = new AffineTransform();
+			transform.scale(scaleX, scaleY);
+			transform.rotate(rot);
+			transform.translate(startx, starty);
+		}
 		return transform;
 	}
 
-    public double getX() {
+	public double getX() {
 		return startx;
 	}
 
@@ -54,6 +54,14 @@ public class GameView implements GameConstants {
 
 	public double getScaleY() {
 		return scaleY;
+	}
+	
+	public double getInvScaleX() {
+		return 1 / getScaleX();
+	}
+	
+	public double getInvScaleY() {
+		return 1 / getScaleY();
 	}
 
 	public double getRotation() {
@@ -71,17 +79,17 @@ public class GameView implements GameConstants {
 	public double getHeight() {
 		return height;
 	}
-	
+
 	public double getRadiusSq() {
-		double halfW = width/2d;
-		double halfH = height/2d;
-		return halfW*halfW + halfH * halfH;
+		double halfW = width / 2d;
+		double halfH = height / 2d;
+		return halfW * halfW + halfH * halfH;
 	}
 
 	public static ViewBuilder getBuilder(GameView view) {
 		return getBuilder().copyView(view);
 	}
-	
+
 	public static ViewBuilder getBuilder() {
 		return new ViewBuilder(new ViewBuilder() {
 			private GameView newView = new GameView(0, 0, 1, 1, 0, GAME_WIDTH,
@@ -99,7 +107,7 @@ public class GameView implements GameConstants {
 				newView.starty = cpy.starty;
 				return this;
 			}
-			
+
 			@Override
 			public ViewBuilder size(double width, double height) {
 				newView.width = width;
@@ -132,7 +140,7 @@ public class GameView implements GameConstants {
 				newView.layer++;
 				return this;
 			}
-			
+
 			@Override
 			public ViewBuilder setLayer(int l) {
 				newView.layer = l;

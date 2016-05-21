@@ -94,4 +94,9 @@ public class GenericGameObject implements Renderable {
 		public GameObjectBound getBounds() {
 			return sprite.getBounds();
 		}
+
+		@Override
+		public int compareTo(Renderable o) {
+			return sprite.compareTo(o);
+		}
 }

@@ -1,6 +1,8 @@
 package com.zealouscoder.ld35.movement;
 
-public interface Positioned {
+import com.zealouscoder.ld35.rendering.Renderable;
+
+public interface Positioned extends Comparable<Renderable> {
 
 	public GamePosition getPosition();
 	

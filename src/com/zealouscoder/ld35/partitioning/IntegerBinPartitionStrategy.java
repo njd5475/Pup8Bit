@@ -17,6 +17,7 @@ public class IntegerBinPartitionStrategy implements SpacePartitionStrategy {
 			.sqrt(BIN_OFFSET);
 
 	private int														binSize			= -1;
+	private int														defaultSizeMultiplier = 2;
 
 	private Map<Integer, Set<Renderable>>	partitions	= new HashMap<Integer, Set<Renderable>>();
 
@@ -30,7 +31,7 @@ public class IntegerBinPartitionStrategy implements SpacePartitionStrategy {
 	public void add(Renderable r) {
 		if (r != null && r.isRenderable()) {
 			if (binSize == -1) {
-				binSize = (int) (r.getBounds().getWidth() * 4);
+				binSize = (int) (r.getBounds().getWidth() * defaultSizeMultiplier);
 			}
 			Integer[] bins = getBins(r.getPosition(), r.getBounds());
 			for (int bin : bins) {
@@ -52,7 +53,10 @@ public class IntegerBinPartitionStrategy implements SpacePartitionStrategy {
 		Integer[] bins = getBins(pos, bound);
 		Set<Renderable> found = new HashSet<Renderable>();
 		for (int bin : bins) {
-			found.addAll(partitions.get(bin));
+			Set<Renderable> set = partitions.get(bin);
+			if (set != null) {
+				found.addAll(set);
+			}
 		}
 		return found.toArray(new Renderable[found.size()]);
 	}

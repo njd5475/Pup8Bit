@@ -17,6 +17,7 @@ import com.zealouscoder.ld35.movement.GameEventHandler;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.partitioning.IntegerBinPartitionStrategy;
 import com.zealouscoder.ld35.partitioning.SpacePartitionStrategy;
+import com.zealouscoder.ld35.rendering.GameObjectBound;
 import com.zealouscoder.ld35.rendering.Renderable;
 import com.zealouscoder.ld35.rendering.Updater;
 
@@ -223,5 +224,9 @@ public class GameState {
 
 	private boolean isClose(Renderable r, GamePosition update) {
 		return update.isClose(r);
+	}
+
+	public Renderable[] get(GamePosition pos, GameObjectBound bounds) {
+		return strategy.get(pos, bounds);
 	}
 }

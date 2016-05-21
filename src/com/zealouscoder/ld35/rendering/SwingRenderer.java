@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JFrame;
 
@@ -15,6 +16,7 @@ import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.InputSystem;
 import com.zealouscoder.ld35.Sprite;
 import com.zealouscoder.ld35.movement.GameEvent;
+import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.swing.GameComponent;
 
 public class SwingRenderer extends GameRenderer implements GameConstants {
@@ -27,22 +29,30 @@ public class SwingRenderer extends GameRenderer implements GameConstants {
 
 	private InputSystem			input;
 
+	private GameObjectBound	screen			= null;
+
 	@Override
 	public void render(GameRenderContext rc, Game game) {
 		renderCount = 0;
+		//create screen bounds based on view inverse scale factor
+		GameView view = game.getMapViewLayer();
+		if(screen == null) {
+			int scrW = (int) (view.getInvScaleX() * GAME_WIDTH);
+			int scrH = (int) (view.getInvScaleY() * GAME_HEIGHT);
+			screen = new GameObjectBound(scrW, scrH);
+		}
 		GameObjectBound bounds = game.getBounds();
-		game.getRenderables().forEach((entry) -> {
-			entry.getValue().forEach((r) -> {
-				if (bounds.collides(game.getPosition(), r.getBounds(),
-						r.getPosition())) {
-					r.render(rc.clone(), game, this);
-					if (debug.contains(r)) {
-						renderDebugView(rc.clone(), r);
-					}
+		Renderable[] renderables = game.get(GamePosition.ANCHOR, screen);
+		TreeSet<Renderable> sorted = new TreeSet<Renderable>(Arrays.asList(renderables)); 
+		for (Renderable r : sorted) {
+			if (bounds.collides(game.getPosition(), r.getBounds(), r.getPosition())) {
+				r.render(rc.clone(), game, this);
+				if (debug.contains(r)) {
+					renderDebugView(rc.clone(), r);
 				}
-				++renderCount;
-			});
-		});
+			}
+			++renderCount;
+		}
 		rc.drawAsText(0, 0, String.format("Rendering %d", renderCount));
 	}
 

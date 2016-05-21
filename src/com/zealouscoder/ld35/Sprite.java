@@ -77,4 +77,13 @@ public class Sprite implements Renderable {
 		return bounds;
 	}
 
+	@Override
+	public int compareTo(Renderable o) {
+		int layerDiff = getLayer() - o.getLayer();
+		if(layerDiff == 0) {
+			return getPosition().compareTo(o.getPosition());
+		}
+		return layerDiff;
+	}
+
 }
