@@ -202,14 +202,11 @@ public class GameState {
 
 	public Renderable[] neighbors(GenericGameObject go, GamePosition update) {
 		Set<Renderable> nearbys = new HashSet<Renderable>();
-		int count = 0;
 		for (Renderable r : strategy.get(update, go.getBounds())) {
-			++count;
 			if (isClose(r, go.getPosition()) && r != go) {
 				nearbys.add(r);
 			}
 		}
-		System.out.println(count);
 		return nearbys.toArray(new Renderable[nearbys.size()]);
 	}
 

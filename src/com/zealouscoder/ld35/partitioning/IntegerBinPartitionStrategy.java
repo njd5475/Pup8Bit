@@ -64,8 +64,8 @@ public class IntegerBinPartitionStrategy implements SpacePartitionStrategy {
 		int left = (int) (pos.getX() / binSize);
 		int right = (int) ((pos.getX() + bound.getWidth()) / binSize);
 
-		for (int x = left; x < right; ++x) {
-			for (int y = top; y < bottom; ++y) {
+		for (int x = left; x <= right; ++x) {
+			for (int y = top; y <= bottom; ++y) {
 				bins.add(getBin(x, y));
 			}
 		}
