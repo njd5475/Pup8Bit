@@ -1,5 +1,6 @@
 package com.zealouscoder.ld35;
 
+import com.zealouscoder.ld35.builder.SpriteBuilder;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.movement.RelativePosition;
 import com.zealouscoder.ld35.rendering.GameObjectBound;
@@ -10,6 +11,7 @@ import com.zealouscoder.ld35.rendering.Renderable;
 
 public class Sprite implements Renderable {
 
+	public static final Sprite PLACEHOLDER = SpriteBuilder.buildPlaceholder();
 	private ImageResource		image;
 	private GamePosition		position;
 	private int							height;

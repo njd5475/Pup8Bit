@@ -23,116 +23,134 @@ import com.zealouscoder.ld35.movement.Positioned;
 
 public class GameRenderContext {
 
-    private Graphics2D                g;
-    private Map<ImageResource, Image> images = new HashMap<ImageResource, Image>();
 
-    private GameRenderContext() {
-    }
+	private Graphics2D								g;
+	private Map<ImageResource, Image>	images	= new HashMap<ImageResource, Image>();
+	
+	private GameRenderContext() {
+		this.loadImageResource(ImageResource.PLACEHOLDER, createPlaceholder());
+	}
 
-    public void toView(GameView view) {
-        g.setTransform(view.getTransform());
-    }
+	private Image createPlaceholder() {
+		BufferedImage bImg = new BufferedImage(32,32,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = bImg.createGraphics();
+		g.setColor(Color.cyan.darker());
+		g.fillRect(0, 0, 32, 32);
+		g.setColor(Color.red.brighter());
+		g.drawLine(0, 0, 16, 16);
+		g.drawLine(0, 16, 16, 0);
+		g.dispose();
+		return bImg;
+	}
 
-    public void toPosition(Positioned positioned) {
-        GamePosition pos = positioned.getPosition();
-        toView(pos.getView());
-        g.translate(pos.getX(), pos.getY());
-    }
+	public void toView(GameView view) {
+		g.setTransform(view.getTransform());
+	}
 
-    void drawAsText(int i, int j, String format) {
-        g.setColor(Color.white);
-        g.drawString(format, i, j + 20);
-    }
+	public void toPosition(Positioned positioned) {
+		GamePosition pos = positioned.getPosition();
+		toView(pos.getView());
+		g.translate(pos.getX(), pos.getY());
+	}
 
-    public void drawSprite(Sprite sprite) {
-        toPosition(sprite);
-        g.drawImage(images.get(sprite.getImage()), 0, 0, sprite.getWidth(), sprite.getHeight(), null);
-    }
+	void drawAsText(int i, int j, String format) {
+		g.setColor(Color.white);
+		g.drawString(format, i, j + 20);
+	}
 
-    public void drawDebug(Renderable r, Color override) {
-        GameObjectBound bounds = r.getBounds();
-        boolean passable = true;
-        if (r instanceof GenericGameObject) {
-            GenericGameObject go = (GenericGameObject) r;
-            if (go.getProperties().containsKey("passable")) {
-                passable = go.check("passable");
-            }
-        }
-        if (passable) {
-            g.setColor(Color.yellow);
-        } else {
-            g.setColor(Color.red);
-        }
-        if (override != null) {
-            g.setColor(override);
-        }
-        g.drawRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());
-    }
+	public void drawSprite(Sprite sprite) {
+		toPosition(sprite);
+		g.drawImage(images.get(sprite.getImage()), 0, 0, sprite.getWidth(),
+				sprite.getHeight(), null);
+	}
 
-    protected void finalize() {
-        g.dispose();
-    }
+	public void drawDebug(Renderable r, Color override) {
+		GameObjectBound bounds = r.getBounds();
+		boolean passable = true;
+		if (r instanceof GenericGameObject) {
+			GenericGameObject go = (GenericGameObject) r;
+			if (go.getProperties().containsKey("passable")) {
+				passable = go.check("passable");
+			}
+		}
+		if (passable) {
+			g.setColor(Color.yellow);
+		} else {
+			g.setColor(Color.red);
+		}
+		if (override != null) {
+			g.setColor(override);
+		}
+		g.drawRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());
+	}
 
-    public GameRenderContext clone() {
-        return wrap(this, (Graphics2D) g.create());
-    }
+	protected void finalize() {
+		g.dispose();
+	}
 
-    public static GameRenderContext wrap(Graphics2D g) {
-        GameRenderContext rc = new GameRenderContext();
-        rc.images = rc.images;
-        rc.g = g;
-        return rc;
-    }
+	public GameRenderContext clone() {
+		return wrap(this, (Graphics2D) g.create());
+	}
 
-    public static GameRenderContext wrap(GameRenderContext context, Graphics2D g) {
-        GameRenderContext rc = new GameRenderContext();
-        rc.images = context.images;
-        rc.g = g;
-        return rc;
-    }
+	public static GameRenderContext wrap(Graphics2D g) {
+		GameRenderContext rc = new GameRenderContext();
+		rc.images = rc.images;
+		rc.g = g;
+		return rc;
+	}
 
-    private static Image adjustImage(Image image) {
-        return adjustImage(image, getConfig());
-    }
+	public static GameRenderContext wrap(GameRenderContext context,
+			Graphics2D g) {
+		GameRenderContext rc = new GameRenderContext();
+		rc.images = context.images;
+		rc.g = g;
+		return rc;
+	}
 
-    private static Image adjustImage(Image image, GraphicsConfiguration dc) {
-        BufferedImage newImage = dc.createCompatibleImage(image.getWidth(null), image.getHeight(null),
-                Transparency.TRANSLUCENT);
-        Graphics g = newImage.createGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return newImage;
-    }
+	private static Image adjustImage(Image image) {
+		return adjustImage(image, getConfig());
+	}
 
-    public static GraphicsConfiguration getConfig() {
-        return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-    }
+	private static Image adjustImage(Image image, GraphicsConfiguration dc) {
+		BufferedImage newImage = dc.createCompatibleImage(image.getWidth(null),
+				image.getHeight(null), Transparency.TRANSLUCENT);
+		Graphics g = newImage.createGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return newImage;
+	}
 
-    private Image loadImage(String name) {
-        InputStream res = this.getClass().getClassLoader().getResourceAsStream(name);
-        try {
-            return ImageIO.read(res);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+	public static GraphicsConfiguration getConfig() {
+		return GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice().getDefaultConfiguration();
+	}
 
-    public void loadImageResource(ImageResource res, Image image) {
-        images.put(res, adjustImage(image));
-    }
+	private Image loadImage(String name) {
+		InputStream res = this.getClass().getClassLoader()
+				.getResourceAsStream(name);
+		try {
+			return ImageIO.read(res);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    public ImageResource loadImageResource(String id) {
-        ImageResource res = ImageResource.wrap(id);
-        if (!images.containsKey(res)) {
-            Image image = loadImage(id);
-            if (image == null) {
-                res = null;
-            } else {
-                loadImageResource(res, image);
-            }
-        }
-        return res;
-    }
+	public void loadImageResource(ImageResource res, Image image) {
+		images.put(res, adjustImage(image));
+	}
+
+	public ImageResource loadImageResource(String id) {
+		ImageResource res = ImageResource.wrap(id);
+		if (!images.containsKey(res)) {
+			Image image = loadImage(id);
+			if (image == null) {
+				res = null;
+			} else {
+				loadImageResource(res, image);
+			}
+		}
+		return res;
+	}
 
 }
