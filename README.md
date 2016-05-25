@@ -15,14 +15,14 @@ May add a custom editor project later to support better integration.
 
 In script files inside the state init method
 
-	loadMap 'resources/puplevel1.tmx'
+	game.loadMap 'resources/puplevel1.tmx'
 
 ## Loading Images
 
 In the main init.coffee file that gets executed place a line there to load 
 assets
 
-	loadImage 'resources/puppy.png'
+	game.loadImage 'resources/puppy.png'
 
 ## Spawning Entities
 
@@ -31,19 +31,24 @@ You can use the main `game` object to spawn new entities in an around different
 
 Spawn an entity with
 
-	game.add 
+	game.add <Renderable>
 
 ## Event Handling
 
 Pup has an event dispatching service. You can trigger events using
 
-	myEvent = new GameEvent("CustomEvent")
+	props = {}
+	myEvent = new GameEvent("CustomEvent", props)
 	game.addEvent myEvent
 
 And you can add listeners for events
 
 	game.addEventHandler "CustomEvent", (game, event) ->
 		print "Handling " + event.getName() + " that's all!"
+
+## Controlling game states
+
+TODO: coming soon!
 
 ## AI, Movement and Mechanics
 
