@@ -17,6 +17,15 @@ In script files inside the state init method
 
 	game.loadMap 'resources/puplevel1.tmx'
 
+#### Retrieving Map Objects
+
+You can access any loaded object properties from Tiled properties my by getting
+the object by id.
+
+	avatar = game.get 'avatar'
+	avatar.getProperties().SPEED = 20 # in pixels per second
+	avatar.getProperties().DIRECTION = 3.1459 # in radians
+
 ## Loading Images
 
 In the main init.coffee file that gets executed place a line there to load 
@@ -45,6 +54,21 @@ And you can add listeners for events
 
 	game.addEventHandler "CustomEvent", (game, event) ->
 		print "Handling " + event.getName() + " that's all!"
+
+## Input Handling
+
+	keyStates = {}
+	K = java.awt.event.KeyEvent
+
+	game.addEventHandler 'KeyEvent', (game, event) ->
+  	  keyCode = event.getProps().keycode
+  	  action = event.getProps().action
+  	
+  	keyStates[keyCode] = action
+  
+  	if keyStates[K.VK_ESCAPE] == 'released'
+      game.quit()
+    
 
 ## Controlling game states
 
