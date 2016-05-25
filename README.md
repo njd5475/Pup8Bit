@@ -57,6 +57,9 @@ And you can add listeners for events
 
 ## Input Handling
 
+There are default events that the game will allow you to listen for `KeyEvent`
+will be fired whenever there is a pressed.
+
 	keyStates = {}
 	K = java.awt.event.KeyEvent
 
