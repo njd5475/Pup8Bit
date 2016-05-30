@@ -33,12 +33,17 @@ public class ScriptExtensionCoffee extends ScriptExtension {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void runInitScript() throws FileNotFoundException, ScriptException {
+        runScript("resources/init.coffee");
+    }
+
+    @Override
+    public void runScript(String file) {
         try {
-            engine.eval(convertToJs(getFile("resources/init.coffee")));
-        } catch (IOException e) {
+            engine.eval(convertToJs(getFile(file)));
+        } catch (IOException | ScriptException e) {
             e.printStackTrace();
         }
     }
@@ -48,7 +53,7 @@ public class ScriptExtensionCoffee extends ScriptExtension {
         bindings.put("__source__", coffee);
         return compiledScript.eval(bindings).toString();
     }
-    
+
     public String getFile(String filename) throws IOException {
         return getFile(Paths.get(filename).toUri());
     }
@@ -56,7 +61,7 @@ public class ScriptExtensionCoffee extends ScriptExtension {
     public String getFile(URI uri) throws IOException {
         return new String(Files.readAllBytes(Paths.get(uri)));
     }
-    
+
     public URL getLocalResource(String resource) {
         return this.getClass().getResource(resource);
     }

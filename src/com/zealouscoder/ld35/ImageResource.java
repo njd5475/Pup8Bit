@@ -5,30 +5,30 @@ import java.util.Map;
 
 public class ImageResource {
 
-	public static final ImageResource					PLACEHOLDER	= wrap("PLACEHOLDER");
+    private static Map<String, ImageResource> resources   = new HashMap<>();
 
-	private static Map<String, ImageResource>	resources		= new HashMap<>();
+    public static final ImageResource         PLACEHOLDER = wrap("PLACEHOLDER");
 
-	private String														image;
+    private String                            image;
 
-	public ImageResource(String image) {
-		this.image = image;
-	}
+    public ImageResource(String image) {
+        this.image = image;
+    }
 
-	public int hashCode() {
-		return image.hashCode();
-	}
+    public int hashCode() {
+        return image.hashCode();
+    }
 
-	public String getIdentity() {
-		return image;
-	}
+    public String getIdentity() {
+        return image;
+    }
 
-	public static synchronized ImageResource wrap(String name) {
-		ImageResource res = resources.get(name);
-		if (res == null) {
-			res = new ImageResource(name);
-			resources.put(name, res);
-		}
-		return res;
-	}
+    public static synchronized ImageResource wrap(String name) {
+        ImageResource res = resources.get(name);
+        if (res == null) {
+            res = new ImageResource(name);
+            resources.put(name, res);
+        }
+        return res;
+    }
 }

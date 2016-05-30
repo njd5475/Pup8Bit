@@ -20,7 +20,14 @@ public class ScriptExtension {
 	}
 
 	public void runInitScript() throws FileNotFoundException, ScriptException {
-		engine.eval(new FileReader("resources/init.js"));
+		runScript("resources/init.js");
 	}
 
+    public void runScript(String file) {
+        try {
+            engine.eval(new FileReader(file));
+        } catch (FileNotFoundException | ScriptException e) {
+            e.printStackTrace();
+        }
+    }
 }
