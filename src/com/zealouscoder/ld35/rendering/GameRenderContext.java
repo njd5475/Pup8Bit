@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.ImageResource;
 import com.zealouscoder.ld35.Sprite;
+import com.zealouscoder.ld35.gui.Widgert;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.movement.Positioned;
 
@@ -152,5 +153,11 @@ public class GameRenderContext {
 		}
 		return res;
 	}
+
+  public void drawWidgert(Widgert widgert) {
+    toView(widgert.getView());
+    toPosition(widgert);
+    g.fillRect(0, 0, (int)widgert.getBounds().getWidth(), (int)widgert.getBounds().getHeight());
+  }
 
 }

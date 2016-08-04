@@ -15,6 +15,7 @@ import com.zealouscoder.ld35.GameConstants;
 import com.zealouscoder.ld35.GenericGameObject;
 import com.zealouscoder.ld35.InputSystem;
 import com.zealouscoder.ld35.Sprite;
+import com.zealouscoder.ld35.gui.Widgert;
 import com.zealouscoder.ld35.movement.GameEvent;
 import com.zealouscoder.ld35.movement.GamePosition;
 import com.zealouscoder.ld35.rendering.swing.GameComponent;
@@ -102,5 +103,10 @@ public class SwingRenderer extends GameRenderer implements GameConstants {
 		jframe.setResizable(false);
 		jframe.setVisible(true);
 	}
+
+  @Override
+  public void render(GameRenderContext rc, Game game, Widgert widgert) {
+    rc.drawWidgert(widgert);
+  }
 
 }

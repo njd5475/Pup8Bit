@@ -1,5 +1,5 @@
 
-layout = layoutBuilder.buttonsCentered().inOrder()
+layout = layoutBuilder.centered().inOrder()
 button = (text) ->
 	button(text, layout)
 
